@@ -1,0 +1,16 @@
+# Magento 2 specific ignores
+/var/
+/generated/
+/pub/static/*
+!/pub/static/.htaccess
+/pub/media/*
+!/pub/media/.htaccess
+/vendor/
+/node_modules/
+/app/etc/env.php
+/auth.json
+
+# IDE and OS specific ignores
+.idea/
+.DS_Store
+Thumbs.db
