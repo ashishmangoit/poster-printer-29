@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="script-src">
+            <values>
+                <value id="custom-csp-googleapis-js" type="host">http://maps.googleapis.com/</value>
+            </values>
+        </policy>
+        <policy id="frame-src">
+            <values>
+                <value id="custom-csp-googleapis-frame" type="host">http://maps.googleapis.com/</value>
+            </values>
+        </policy>
+        <policy id="media-src">
+            <values>
+                <value id="custom-csp-googleapis-media" type="host">http://maps.googleapis.com/</value>
+                <value id="custom-csp-googleapis-media-static" type="host">http://maps.gstatic.com/</value>
+            </values>
+        </policy>
+        <policy id="img-src">
+            <values>
+                <value id="custom-csp-googleapis-img" type="host">http://maps.googleapis.com/</value>
+                <value id="custom-csp-googleapis-img-static" type="host">http://maps.gstatic.com/</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>

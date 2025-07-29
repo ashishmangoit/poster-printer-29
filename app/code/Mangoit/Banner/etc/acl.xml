@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Mangoit_Core::mangoitcore" title="Mangoit Extensions">
+                    <resource id="Mangoit_Banner::parent" title="Homepage Banner" sortOrder="10">
+                    	<resource id="Mangoit_Banner::banner" title="Homepage Banner" sortOrder="10" />
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

@@ -1,0 +1,106 @@
+<?php
+$banners = $block->getFrontBanners()->getData();
+
+$currentDate = $block->getCurrentDate();
+$storeId = $block->getCurrentStoreView();
+
+$isMobile = false;
+if (isset($_SERVER["HTTP_USER_AGENT"]) && preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+    $isMobile = true;
+}
+
+?>
+<div class="homeslider-wrap">
+    <div class="container">
+        <div id="home-banner" class="owl-top-narrow">
+            <?php foreach ($banners as $banner): ?>
+                <?php
+                $banner_stores = explode(',', $banner['stores']);
+                $display_banner = (in_array($storeId, $banner_stores)) ? true : ((in_array(0, $banner_stores)) ? true : false);
+
+                if ($display_banner) {
+                    $display_from = $banner['display_from'];
+                    $display_to = $banner['display_to'];
+
+                    if ($display_from && $display_to) {
+                        if ($currentDate < $display_from) {
+                            $display_banner = false;
+                        } else if ($currentDate > $display_to) {
+                            $display_banner = false;
+                        }
+                    } else {
+                        if ($display_from) {
+                            if ($currentDate < $display_from) {
+                                $display_banner = false;
+                            }
+                        } else if ($display_to) {
+                            if ($currentDate > $display_to) {
+                                $display_banner = false;
+                            }
+                        }
+                    }
+                }
+                ?>
+                <?php if($display_banner): ?>
+                    <div class="item slide-content-wrap">
+                        <?php $banner_image = ($isMobile) ? $banner['mobile_image'] : $banner['image']; ?>
+                        <?php $banner_image_height = ($isMobile) ? '320px' : '500px'; ?>
+                        <?php $banner_title = (isset($banner['title']) && $banner['title']) ? $banner['title'] : false; ?>
+                        <?php $banner_desc = (isset($banner['description']) && $banner['description']) ? $banner['description'] : false; ?>
+                        <?php $banner_btnlabel = (isset($banner['button_label']) && $banner['button_label']) ? $banner['button_label'] : false; ?>
+                        <?php $banner_btnlink = (isset($banner['button_link']) && $banner['button_link']) ? $banner['button_link'] : false; ?>
+
+                        <?php if(!$banner_btnlabel && $banner_btnlink): ?>
+                            <a href="<?php echo $banner_btnlink ?>">
+                        <?php endif; ?>
+
+                        <img src="<?php echo $block->getMediaDirectoryUrl().$banner_image ?>" height="<?php echo $banner_image_height ?>"/>
+                        <div class="slide-container">
+                            <?php if($banner_title || $banner_desc || $banner_btnlabel): ?>
+                                <div class="carousel-caption">
+                                    <?php if($banner_title): 
+                                        $titleclass = str_replace(' ', '-', strtolower($banner_title));?>
+                                        <h3 class="<?php echo $titleclass;?>" ><?php echo $banner_title; ?></h3>
+                                    <?php endif; ?>
+                                    <?php if($banner_desc): ?>
+                                        <p><?php echo $banner_desc; ?></p>
+                                    <?php endif; ?>
+                                    <?php if($banner_btnlabel): ?>
+                                        <div class="shopNow-btn action primary"><a href="<?php echo $banner_btnlink; ?>"><?php echo $banner_btnlabel; ?></a></div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if(!$banner_btnlabel): ?>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+<script>
+    require([
+        'jquery',
+        'owl.carousel/owl.carousel.min'
+    ], function ($) {
+        $(document).ready(function(){
+            $("#home-banner").owlCarousel({
+                items: 1,
+                loop:true,
+                autoplay: true,
+                autoplayHoverPause: true,
+                dots: false,
+                nav: false,
+                autoHeight:true,
+                responsiveClass:true,
+                animateIn: 'fadeIn', 
+                animateOut: 'fadeOut',
+                navText : ["<i class='fa fa-chevron-left'></i>","<i class='fa fa-chevron-right'></i>"]
+            });
+        });
+    });
+</script>

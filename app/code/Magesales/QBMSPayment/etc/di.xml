@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <virtualType name="QBMSPaymentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="string">qbmspayment</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">QBMSPaymentConfig</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magesales\QBMSPayment\Gateway\Http\TransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">QBMSPaymentConfig</argument>
+        </arguments>
+    </type>
+    <type name="Magesales\QBMSPayment\Gateway\Http\RefundTransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">QBMSPaymentConfig</argument>
+        </arguments>
+    </type>
+    <type name="Magesales\QBMSPayment\Block\Info">
+        <arguments>
+            <argument name="config" xsi:type="object">QBMSPaymentConfig</argument>
+        </arguments>
+    </type>
+    <virtualType name="QBMSPaymentFacadeAdapter" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="string">qbmspayment</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form\Cc</argument>
+            <argument name="infoBlockType" xsi:type="string">Magesales\QBMSPayment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">QBMSPaymentValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">QBMSPaymentValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">QBMSPaymentCommandPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">QBMSPaymentDefaultValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentDefaultValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">QBMSPaymentConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">QBMSPaymentCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">QBMSPaymentConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">Magesales\QBMSPayment\Gateway\Command\InitializeCommand</item>
+                <item name="authorize" xsi:type="string">QBMSPaymentDirectGatewayCommand</item>
+                <item name="capture" xsi:type="string">QBMSPaymentDirectGatewayCommand</item>
+                <item name="refund" xsi:type="string">QBMSPaymentRefundGatewayCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Start Authorize Command -->
+    <virtualType name="QBMSPaymentDirectGatewayCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">QBMSPaymentPaymentBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">QBMSPaymentAuthorizeTransferFactory</argument>
+            <argument name="client" xsi:type="object">QBMSPaymentZendHttpClient</argument>
+            <argument name="handler" xsi:type="object">QBMSPaymentDirectResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Magesales\QBMSPayment\Gateway\Validator\Direct\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentPaymentBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="card_details" xsi:type="string">Magesales\QBMSPayment\Gateway\Request\CardDetailsDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentAuthorizeTransferFactory" type="Magesales\QBMSPayment\Gateway\Http\TransferFactory">
+        <arguments>
+            <argument name="action" xsi:type="const">Magesales\QBMSPayment\Gateway\Request\AbstractDataBuilder::PAYMENT</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentDirectResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Magesales\QBMSPayment\Gateway\Response\PaymentDetailsHandler</item>
+                <item name="card_details" xsi:type="string">Magesales\QBMSPayment\Gateway\Response\Direct\CardDetailsHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentZendHttpClient" type="Magesales\QBMSPayment\Gateway\Http\Client\Curl">
+        <arguments>
+            <argument name="logger" xsi:type="object">QBMSPaymentLogger</argument>
+        </arguments>
+    </virtualType>
+    <!-- End Authorize Command -->
+
+    <!-- Start Refund Command -->
+    <virtualType name="QBMSPaymentRefundGatewayCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">QBMSPaymentRefundDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">QBMSPaymentRefundTransferFactory</argument>
+            <argument name="client" xsi:type="object">QBMSPaymentRefundHttpClient</argument>
+            <argument name="validator" xsi:type="object">Magesales\QBMSPayment\Gateway\Validator\RefundValidator</argument>
+            <argument name="handler" xsi:type="object">QBMSPaymentRefundResponseHandler</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentRefundTransferFactory" type="Magesales\QBMSPayment\Gateway\Http\RefundTransferFactory">
+        <arguments>
+            <argument name="action" xsi:type="const">Magesales\QBMSPayment\Gateway\Request\AbstractDataBuilder::REFUND</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentRefundDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="refund_data" xsi:type="string">Magesales\QBMSPayment\Gateway\Request\RefundDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentRefundResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+<!--                <item name="response_messages" xsi:type="string">Magesales\QBMSPayment\Gateway\Response\ResponseMessagesHandler</item>-->
+                <item name="refund" xsi:type="string">Magesales\QBMSPayment\Gateway\Response\TransactionRefundHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="QBMSPaymentRefundHttpClient" type="Magesales\QBMSPayment\Gateway\Http\Client\RefundCurl">
+        <arguments>
+            <argument name="logger" xsi:type="object">QBMSPaymentLogger</argument>
+        </arguments>
+    </virtualType>
+    <!-- End Refund Command -->
+</config>

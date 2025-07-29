@@ -1,0 +1,256 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+use Magento\Framework\App\Action\Action;
+
+?>
+<?php
+/**
+ * Template for displaying products list widget
+ *
+ */
+?>
+<?php
+
+$baseUrl = $block->getBaseUrl();
+   $id = explode(",",$block->getProductIds());
+   // echo "<pre>";
+   // print_r($id);
+   // die("home block 1 phtml");
+   //$collection = $block->getProductCollection($id);
+
+ $_helper = $this->helper('Magento\Catalog\Helper\Output');
+ $_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+
+ $_category_config = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/category');
+ $_category_grid_config = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/category_grid');
+
+    $type = 'widget-product-grid';
+
+    $mode = 'grid';
+
+    $image = 'new_products_content_widget_grid';
+    $hover_image = 'category_page_grid-hover';
+    $title = $block->getTitle() ? __($block->getTitle()) : '';
+    $items = $block->getProductCollection($id)->getItems();
+
+    $showWishlist = true;
+    $showCompare = true;
+    $showCart = true;
+    $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
+    $description = false;
+    
+    //$image_width = ($_category_config['ratio_width'])?$_category_config['ratio_width']:272;
+    //$image_height = ($_category_config['ratio_height'])?$_category_config['ratio_height']:337;
+    $image_width =300;
+    $image_height = 300;
+
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $listProduct = $objectManager->create('Magento\Catalog\Block\Product\ListProduct');
+?>
+<div class="block widget block-products-list <?php /* @escapeNotVerified */ echo $mode; ?>">
+        <?php if ($title):?>
+        <div class="block-title">
+            <strong><?php /* @escapeNotVerified */ echo $title; ?></strong><span class="see-all-products" style="float:right;"><a href="<?php echo $block->getBaseUrl()."large-format-printing.html"; ?>"><?php echo __('See All Products'); ?></span>
+        </div>
+        <?php endif ?>
+        <div class="block-content">
+            <?php /* @escapeNotVerified */ echo '<!-- ' . $image . '-->' ?>
+            <div class="products wrapper products-<?php /* @escapeNotVerified */ echo $mode; ?> <?php /* @escapeNotVerified */ echo $mode; ?>">
+                <?php $iterator = 1; ?>
+                <ol class="products list items product-items <?php /* @escapeNotVerified */ echo $type; ?>">
+                    <?php foreach ($id as $product):
+                        $_item = $block->getProductCollection($product)->getFirstItem();
+                        ?>
+
+                        <?php echo($iterator++ == 1) ? '<li class="item product product-item">' : '</li><li class="item product product-item">' ?>
+                        <div class="product-item-info" data-container="product-grid">
+                            <?php // Product Image ?>
+                            <div class="product photo product-item-photo">
+                                <a href="<?php echo $_item->getProductUrl() ?>" tabindex="-1">
+                                    <?php
+                                        if($_category_config['aspect_ratio'])
+                                            $productImage = $_imagehelper->init($_item, $image)->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE)->resize($image_width);
+                                        else
+                                            $productImage = $_imagehelper->init($_item, $image)->resize($image_width, $image_height);
+                                        $productImageUrl = $productImage->getUrl();
+                                    ?>
+                                        <img class="product-image-photo default_image" src="<?php echo $productImageUrl; ?>" alt="<?php echo $productImage->getLabel(); ?>"/>
+                                    <?php if($_category_config['alternative_image']): ?>
+                                    <?php
+                                        if($_category_config['aspect_ratio'])
+                                            $productHoverImage = $_imagehelper->init($_item, $hover_image)->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize($image_width);
+                                        else
+                                            $productHoverImage = $_imagehelper->init($_item, $hover_image)->resize($image_width, $image_height);
+                                        $productHoverImageUrl = $productHoverImage->getUrl();
+                                    ?>
+                                        <?php if($productImageUrl != str_replace("/thumbnail/","/small_image/",$productHoverImageUrl)): ?>
+                                        <img class="product-image-photo hover_image" src="<?php echo $productHoverImageUrl; ?>" alt="<?php echo $productHoverImage->getLabel(); ?>"/>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </a>
+                            </div>
+                            <div class="product details product-item-details">
+                                <?php
+                                    $review_html = $listProduct->getReviewsSummaryHtml($_item, $templateType);
+                                ?>
+                                <?php if($review_html): ?>
+                                    <?php //echo $review_html; ?>
+                                <?php else: ?>
+                                <!-- <div class="product-reviews-summary short">
+                                    <div class="rating-summary">
+                                        <span class="label"><span>Rating:</span></span>
+                                        <div class="rating-result" title="0%">
+                                            <span style="width:0"><span>0%</span></span>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <?php endif; ?>
+                                 <strong class="product name product-item-name">
+                                    <?php 
+
+                                        /*print_r(get_class_methods($_item));
+
+                                        echo "<br><br><br>";
+                                        print_r(($_item->getData()));
+                                        die('dieddd');*/
+                                     ?>
+
+                                    <a title="<?php echo $block->escapeHtml($_item->getName()) ?>"
+                                       href="<?php /* @escapeNotVerified */ echo $block->getProductUrl($_item) ?>"
+                                       class="product-item-link">
+                                        <?php echo $block->escapeHtml($_item->getName()) ?>
+                                    </a>
+                                </strong>
+                                <div class="price-per-square-foot-container"><div class="price-per-square-foot"><?php 
+
+                                if($_item->getData('entity_id') == 16){
+
+                                    echo "$30.00";
+
+                                } else if($_item->getData('entity_id') == 33){
+
+                                    echo "$51.00";
+
+                                } else if($_item->getData('entity_id') == 19){
+
+                                    echo "$57.00";
+
+                                } else if($_item->getData('entity_id') == 22){
+
+                                    echo "$51.00";
+
+                                } else if($_item->getData('entity_id') == 29){
+
+                                    echo "$50.00";
+
+                                } else if($_item->getData('entity_id') == 20){
+
+                                    echo "$30.00";
+
+                                } else{
+                                    echo $_item->getPricePerSquareFoot();
+                                }
+
+                                 ?></div><!-- <br> --><div class="price-per-square-foot-text"><?php
+
+                                 if($_item->getData('entity_id') == 16){
+
+                                    echo __('24"x36"');
+
+                                } else if($_item->getData('entity_id') == 33){
+
+                                    echo __('24"x36"');
+
+                                } else if($_item->getData('entity_id') == 19){
+
+                                    echo __('24"x36"');
+
+                                } else if($_item->getData('entity_id') == 22){
+
+                                    echo __('24"x36"');
+
+                                } else if($_item->getData('entity_id') == 29){
+
+                                    echo __('24"x60');
+
+                                } else if($_item->getData('entity_id') == 20){
+
+                                    echo __('20"x30"');
+
+                                } else{
+                                    echo __('per square foot');
+                                }
+ 
+                             ?></div></div>
+                                
+                                <?php if($_category_config['actions']): ?>
+                                <?php if ($showWishlist || $showCompare || $showCart): ?>
+                                    <div class="product-item-inner">
+                                        <div class="product actions product-item-actions">
+                                            <?php if($_category_config['addtowishlist']): ?>
+                                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow() && $showWishlist): ?>
+                                                    <a href="#"
+                                                       data-post='<?php /* @escapeNotVerified */ echo $block->getAddToWishlistParams($_item); ?>'
+                                                       class="action towishlist actions-secondary" data-action="add-to-wishlist"
+                                                       title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
+                                                        <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
+                                                    </a>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="actions-primary">
+                                    <?php if ($_item->isSaleable()): ?>
+                                        <?php $postParams = $listProduct->getAddToCartPostParams($_item); ?>
+                                        <form data-role="tocart-form" action="<?php echo $_item->getProductUrl() ?>" method="post">
+                                            <input type="hidden" name="product" value="<?php echo $postParams['data']['product']; ?>">
+                                            <input type="hidden" name="<?php echo Action::PARAM_NAME_URL_ENCODED; ?>" value="<?php echo $postParams['data'][Action::PARAM_NAME_URL_ENCODED]; ?>">
+                                            <?php if(isset($_category_config['qty_field']) && $_category_config['qty_field']):?>
+                                            <div class="qty-box">
+                                                <a href="javascript:void(0)" class="qtyminus"><i class="porto-icon-minus"></i></a>
+                                                <input type="text" name="qty" id="qty" maxlength="12" value="<?php /* @escapeNotVerified */ echo $block->getProductDefaultQty() * 1 ?>" title="<?php /* @escapeNotVerified */ echo __('Qty') ?>" class="input-text qty" data-validate="<?php echo $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"/>
+                                                <a href="javascript:void(0)" class="qtyplus"><i class="porto-icon-plus"></i></a>
+                                            </div>
+                                            <?php endif;?>
+                                            <?php echo $block->getBlockHtml('formkey')?>
+                                            <button type="submit"
+                                                    title="<?php echo $block->escapeHtml(__('Configure')); ?>"
+                                                    class="action tocart primary">
+                                                <span><?php echo __('Order Now') ?></span>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <?php if ($_item->getIsSalable()): ?>
+                                            <div class="stock available"><span><?php echo __('In stock') ?></span></div>
+                                        <?php else: ?>
+                                            <div class="stock unavailable"><span><?php echo __('Out of stock') ?></span></div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                                    </div>
+                                <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php echo($iterator == count($items)+1) ? '</li>' : '' ?>
+                    <?php endforeach ?>
+                </ol>
+            </div>
+            <?php echo $block->getPagerHtml() ?>
+        </div>
+    </div>
+
+ 
+<style type="text/css">
+.price-per-square-foot-text {
+    font-size: 13px;
+    margin-top: 4px;
+    color: #999;
+    text-transform: none;
+}
+</style>

@@ -1,0 +1,64 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * Template for displaying products list widget
+ *
+ * @var $block \Magento\CatalogWidget\Block\Product\ProductsList
+ */
+
+?>
+<?php if ($exist = ($block->getProductCollection() && $block->getProductCollection()->getSize())):?>
+<?php
+$_productCollection = $block->getLoadedProductCollection();
+$_helper = $this->helper('Magento\Catalog\Helper\Output');
+$_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+$_productCollection = $block->getProductCollection();
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$cateinstance = $objectManager->create('Magento\Catalog\Model\CategoryFactory');
+$cateid = '53';
+$collection = $cateinstance->create()->load($cateid)->getProductCollection()->addAttributeToSelect('*') ->addAttributeToSort('position', 'ASC');
+
+    $type = 'widget-product-grid';
+
+    $mode = 'grid';
+
+    $title = 'All Products';
+    /*$items = $_productCollection->getData();*/
+
+?>
+    <div class="block widget block-products-list">
+        <?php if ($title):?>
+            <div class="block-title">
+                <strong><?php /* @escapeNotVerified */ echo $title; ?></strong>
+            </div>
+            <?php endif ?>    
+                        
+            <?php foreach ($collection as $_item): 
+                if($_item->getName() == 'Adhesive Vinyl'){
+                    //continue;
+                }
+                ?>
+                <div class="product-item-info">
+                 
+                    <div class="product-item-details">
+                         <strong class="product-item-name">
+                            <a title="<?php echo $block->escapeHtml($_item->getName()) ?>"
+                               href="<?php /* @escapeNotVerified */ echo $_item->getProductUrl() ?>"
+                               class="product-item-link">
+                                <?php echo $block->escapeHtml($_item->getName()) ?>
+                            </a>
+                        </strong>
+                    </div>
+                </div>
+            <?php endforeach ?>
+                   
+        </div>
+<?php endif;?>

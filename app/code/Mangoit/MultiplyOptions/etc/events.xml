@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="checkout_onepage_controller_success_action">
+        <observer name="checkout_onepage_controller_success_action_sendmail" instance="Mangoit\MultiplyOptions\Observer\SendMailOnOrderSuccess" />
+    </event>
+    <!-- <event name="sales_order_invoice_register">
+        <observer name="chargeafter_order_invoiced" instance="Mangoit\MultiplyOptions\Observer\OrderInvoiced" />
+    </event> -->
+    <event name="sales_order_save_before">
+        <observer name="set_order_attribute" instance="Mangoit\MultiplyOptions\Observer\SetOrderAttribute"/>
+    </event>
+</config>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Mangoit_CustomQuote::quote_head" title="Quote" module="Mangoit_CustomQuote" sortOrder="100"  resource="Mangoit_CustomQuote::quote_head" />
+        <add id="Mangoit_CustomQuote::custom_quote" title="Custom Quote" module="Mangoit_CustomQuote" sortOrder="10" parent="Mangoit_CustomQuote::quote_head" action="quote/quote" resource="Mangoit_CustomQuote::quote_head" />
+    </menu>
+</config>

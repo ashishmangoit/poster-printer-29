@@ -1,0 +1,113 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/**
+ * @var $block \Magento\Theme\Block\Html\Title
+ */
+$cssClass = $block->getCssClass() ? ' ' . $block->getCssClass() : '';
+$title = '';
+
+$customPageHeading = $block->getPageHeading();
+
+if($this->getRequest()->getFullActionName() == 'catalog_product_view')
+{
+    if($block->getPageHeading() == 'Aluminum Signs')
+    {
+        $customPageHeading = 'Aluminum Sign';
+    }
+    else if($block->getPageHeading() == 'Canvas Prints')
+    {
+        $customPageHeading = 'Canvas';
+    }
+    else if($block->getPageHeading() == 'Corrugated Plastic')
+    {
+        $customPageHeading = 'Coroplast Corrugated Plastic';
+    }
+    else if($block->getPageHeading() == 'Drawings & Blueprints')
+    {
+        $customPageHeading = 'Architechtural Drawings and Blueprints';
+    }
+    else if($block->getPageHeading() == 'Fabric Banners')
+    {
+        $customPageHeading = 'Fabric Banner';
+    }
+    else if($block->getPageHeading() == 'Falcon Flags')
+    {
+        $customPageHeading = 'Falcon Flag';
+    }
+    else if($block->getPageHeading() == 'Falconboard Posters')
+    {
+        $customPageHeading = 'Falconboard Poster';
+    }
+    else if($block->getPageHeading() == 'Floor Graphics')
+    {
+        $customPageHeading = 'Floor Graphic';
+    }
+    else if($block->getPageHeading() == 'Foam Core Posters')
+    {
+        $customPageHeading = 'Foam Core Poster';
+    }
+    else if($block->getPageHeading() == 'Gator Board Posters')
+    {
+        $customPageHeading = 'Gator Board Poster';
+    }
+    else if($block->getPageHeading() == 'Magnets')
+    {
+        $customPageHeading = 'Magnet';
+    }
+    else if($block->getPageHeading() == 'Mesh Banners')
+    {
+        $customPageHeading = 'Mesh Banner';
+    }
+    else if($block->getPageHeading() == 'Retractable Banners')
+    {
+        $customPageHeading = 'Retractable Banner';
+    }
+    else if($block->getPageHeading() == 'Sintra PVC Boards')
+    {
+        $customPageHeading = 'Sintra PVC Board';
+    }
+    else if($block->getPageHeading() == 'Table Throws')
+    {
+        $customPageHeading = 'Table Throw';
+    }
+    else if($block->getPageHeading() == 'Poster Printing')
+    {
+        $customPageHeading = 'Poster';
+    }
+    else if($block->getPageHeading() == 'Vinyl Banners')
+    {
+        $customPageHeading = 'Vinyl Banner';
+    }
+
+    if (trim($block->getPageHeading())) {
+        $title = '<span class="base" data-ui-id="page-title-wrapper" ' .  $block->getAddBaseAttribute() . '>'
+        . $customPageHeading. ' Printing' . '</span>';
+    }
+}
+else
+{
+    if (trim($block->getPageHeading())) {
+        $title = '<span class="base" data-ui-id="page-title-wrapper" ' .  $block->getAddBaseAttribute() . '>'
+        . $block->escapeHtml($block->getPageHeading()) . '</span>';
+    }
+}
+
+?>
+<?php if ($title): ?>
+<div class="page-title-wrapper<?php /* @escapeNotVerified */ echo $cssClass; ?>">
+    <h1 class="page-title"
+        <?php if ($block->getId()): ?> id="<?php /* @escapeNotVerified */ echo $block->getId();?>" <?php endif; ?>
+        <?php if ($block->getAddBaseAttributeAria()): ?>
+            aria-labelledby="<?php /* @escapeNotVerified */ echo $block->getAddBaseAttributeAria(); ?>"
+        <?php endif; ?>>
+        <?php /* @escapeNotVerified */ echo $title ?>
+    </h1>
+    <?php echo $block->getChildHtml(); ?>
+</div>
+<?php endif; ?>

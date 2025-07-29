@@ -1,0 +1,171 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var $block \Magento\Sales\Block\Order\Email\Items\DefaultItems */
+
+/** @var $_item \Magento\Sales\Model\Order\Item */
+$_item = $block->getItem();
+$productId = $_item->getProductId();
+$itemId = $_item->getQuoteItemId();
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance(); //instance of Object manager  
+$quote_item = $objectManager->create('\Mangoit\MultiplyOptions\Helper\QuantityCalculate');
+
+$debugData = $objectManager->create('Psr\Log\LoggerInterface');        
+       
+$debugData->info('Default.phtml item_id -'.$itemId);
+            
+$_options = $block->getItemOptions();
+
+$image_url = '';
+$image_show = '';
+
+foreach ($_options as $_option) {
+     //$_formatedOptionValue = $this->getFormatedOptionValue($_option);
+    if($_option['option_type'] == 'file'){        
+                        
+         // override here as per your requirements
+        if(isset($_option['option_value'])){
+
+            $image_data = unserialize($_option['option_value']);    
+            $title = explode('.',$image_data['title']);
+            $fileExtension = array_pop($title);
+            if($fileExtension == 'doc'||$fileExtension == 'docx'){
+                $quote_path = 'custom_options/doc.png';
+            }
+            else if($fileExtension == 'pdf'){
+               $quote_path = $quote_item->getImgData($itemId);    
+               if($quote_path=='') 
+                $quote_path = 'custom_options/pdf.png';          
+
+            }else if($fileExtension == 'ppt' || $fileExtension == 'pptx'){
+              $quote_path = 'custom_options/ppt.png';          
+
+            }else if($fileExtension == 'ai'){
+                $quote_path = $quote_item->getImgData($itemId);            
+               if($quote_path=='') 
+                $quote_path = 'custom_options/ai.png';
+              
+            }else if($fileExtension == 'tiff'){
+                $quote_path = $quote_item->getImgData($itemId);            
+               if($quote_path=='')             
+              $quote_path = 'custom_options/tiff.png';
+            }
+            else if($fileExtension == 'psd'){
+                $quote_path = $quote_item->getImgData($itemId);            
+               if($quote_path=='')             
+                $quote_path = 'custom_options/psd.png';          
+            } else if($fileExtension == 'tiff'){
+               $quote_path = $quote_item->getImgData($itemId);            
+               if($quote_path=='')              
+              $quote_path = 'custom_options/tiff.png';          
+            }else if($fileExtension == 'eps'){
+                $quote_path = $quote_item->getImgData($itemId);            
+               if($quote_path=='')             
+              $quote_path = 'custom_options/eps.jpg';          
+            }else{
+             $quote_path = $image_data['quote_path'];   
+            }
+            $storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+              $base_url = $storeManager->getStore()->getBaseUrl();
+              
+              $image_path =  $base_url.'pub/media/'.$quote_path;
+            //$imgpath = $objectManager->create('Mangoit\MultiplyOptions\Helper\Image')->imageResize($quote_path,'165','165');    
+            $image_show =  '<span class="product-image-container" style="width:165px;"><span class="product-image-wrapper" style="padding-bottom: 100%;">
+            <img width="100" style="margin-top: 48%;" class="product-image-photo" src="'.$image_path.'" ></span>';
+            //<p style="text-align: center;font-style: italic;font-size: 14px;margin: 0;">'.$image_data['title'].'</p></span>    
+        }  
+          
+    }
+ }if($image_show==null){
+            $debugData->info('Default.phtml  productId-'.$productId);    
+           $imageSize = (int)$block->getConfig('sales_email/imageconfig/image_resize');
+            if($imageSize <=10)
+                $imageSize = 135;
+            $_imagehelper = $objectManager->create('Magento\Catalog\Helper\Image');
+            if($childProd = current($_item->getChildrenItems()))
+            {
+                    $productImage = $_imagehelper->init($childProd->getProduct(), 'category_page_list', array('height' => $imageSize , 'width'=> $imageSize))->getUrl();
+            }
+            else
+            {
+                    $productImage = $_imagehelper->init($_item->getProduct(), 'category_page_list', array('height' => $imageSize , 'width'=> $imageSize))->getUrl();
+            }
+         $debugData->info('Default.phtml  product Image path-'.$productImage);    
+         $image_show =  '<span class="product-image-container" style="width:165px;"><span class="product-image-wrapper" style="padding-bottom: 100%;">
+            <img style="width="100" height="100" margin-top: 48%;" class="product-image-photo" src="'.$productImage.'" ></span></span>';
+    }  
+    $debugData->info('Default.phtml  image show path-'.$image_show);    
+?>
+<tr>
+    <td>
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tbody>
+                <tr>
+                    <td align="left" valign="middle" width="100" style="padding:10px 15px;display: table-cell;vertical-align: middle;"> <?php if(isset($image_show)){echo $image_show;} ?></td>
+                    <td align="left" valign="top" width="500px" style="padding: 10px 10px;border-right: 1px solid #fff;">
+                        
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="line-height: 24px;background: #fff;padding:10px 10px 10px;">
+                        <tbody>
+                            <tr><td style="background: #fff;margin:0px;color: #4f6b90;font-size: 14px;font-weight: 600;"><?= $block->escapeHtml($_item->getName()) ?></td></tr>
+                        </tbody>
+                        </table>
+
+
+                        <!-- <p style="background: #fff;margin:0;padding: 10px;color: #4f6b90;font-size: 18px;font-weight: 600;"></p> -->
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="line-height: 24px;background: #fff;padding:0px 10px 10px;">
+
+                            <tbody>
+                                                 
+                                <?php if ($_options):                
+                                    $_optionsData = $quote_item->updateOptionPosition($_options);
+                                    foreach ($_optionsData as $_option) :     
+                                        ?>
+                                        <?php if(!($_option['label'] == 'Quantity')): ?>
+                                            <tr>
+                                                 <td style="font-size: 13px;color: #727375; width: 45%">
+                                                    <?= /* @escapeNotVerified */  $_option['label'] ?></td>
+                                                <td style="font-size: 13px;color: #727375;padding-left: 5px; width: 55%">
+                                                    <?= /* @escapeNotVerified */  nl2br($_option['value']) ?>
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
+                                        <?php endforeach; ?>                    
+                                <?php endif;?>               
+                            </tbody>
+                        </table>
+                    </td>
+                   <!--  <td align="left" valign="middle" width="100px"></td> -->
+                </tr>
+            </tbody>
+        </table> 
+    </td>
+    <td style="padding: 5px 10px;font-size: 14px;border-right: 1px solid #fff;text-align: center;" class="item-qty"><?= /* @escapeNotVerified */  $_item->getQtyOrdered() * 1 ?></td>
+    <td style="padding: 5px 10px;font-size: 14px;text-align: center;" class="item-price">
+        <?= /* @escapeNotVerified */  '$'.number_format((float)$_item->getPrice(), 2, '.', ''); ?>
+    </td>
+    <td style="padding: 5px 10px;font-size: 14px;text-align: center;" class="item-price">
+        <?= /* @escapeNotVerified */  '$'.number_format((float)$_item->getPrice() * $_item->getQtyOrdered() * 1, 2, '.', ''); ?>
+    </td>
+</tr>
+<?php if ($_item->getGiftMessageId() && $_giftMessage = $this->helper('Magento\GiftMessage\Helper\Message')->getGiftMessage($_item->getGiftMessageId())): ?>
+<tr>
+    <td colspan="3" class="item-extra">
+        <table class="message-gift">
+            <tr>
+                <td>
+                    <h3><?= /* @escapeNotVerified */  __('Gift Message') ?></h3>
+                    <strong><?= /* @escapeNotVerified */  __('From:'); ?></strong> <?= $block->escapeHtml($_giftMessage->getSender()) ?>
+                    <br /><strong><?= /* @escapeNotVerified */  __('To:'); ?></strong> <?= $block->escapeHtml($_giftMessage->getRecipient()) ?>
+                    <br /><strong><?= /* @escapeNotVerified */  __('Message:'); ?></strong>
+                    <br /><?= $block->escapeHtml($_giftMessage->getMessage()) ?>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<?php endif; ?>

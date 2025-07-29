@@ -1,0 +1,22 @@
+<?php
+namespace Magesales\QBMSPayment\Block;
+
+use Magento\Framework\Phrase;
+use Magento\Payment\Block\ConfigurableInfo;
+
+class Info extends ConfigurableInfo
+{
+    protected function getLabel($field)
+    {
+        switch ($field) {
+            case 'cc_type':
+                return __('Card Type');
+            case 'card_number':
+                return __('Card number');
+            case 'card_expiry_date':
+                return __('Expiration Date');
+            default:
+                return parent::getLabel($field);
+        }
+    }
+}

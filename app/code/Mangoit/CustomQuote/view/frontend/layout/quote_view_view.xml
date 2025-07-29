@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" layout="2columns-right">
+    <head><title>Customer Quote</title></head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Mangoit\CustomQuote\Block\Quote" name="quote" template="view.phtml">
+            </block>
+        </referenceContainer>
+    </body>
+</page>

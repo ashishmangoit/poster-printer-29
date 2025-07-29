@@ -1,0 +1,68 @@
+<!--
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<form id="co-shipping-method-form" data-bind="blockLoader: isLoading, visible: isVisible()">
+    <p class="field note" data-bind="visible: (shippingRates().length <= 0)">
+        <!-- ko text: $t('Sorry, no quotes are available for this order at this time')--><!-- /ko -->
+    </p>
+    <fieldset class="fieldset rate" data-bind="visible: (shippingRates().length > 0)">
+        <dl class="items methods" data-bind="foreach: shippingRateGroups">
+            <!-- <dt class="item-title"><span data-bind="text: $data"></span></dt> -->
+            <dd class="item-options" data-bind="foreach: $parent.getRatesForGroup($data)">
+                <div data-bind="css: {'field choice item': available, 'message error': !available} ">
+                    <!-- ko ifnot: (available) -->
+                    <div data-bind="text: error_message"></div>
+                    <!-- /ko -->
+                    <!-- ko if: (available) -->
+                    <input type="radio"
+                           class="radio"
+                           data-bind="
+                                click: $parents[1].selectShippingMethod,
+                                checked: $parents[1].selectedShippingMethod,
+                                attr: {
+                                        value: carrier_code + '_' + method_code,
+                                        id: 's_method_' + method_code
+                                        }
+                                "/>
+                    <div class="shiping-label">
+                        <label class="label" data-bind="attr: {for: 's_method_' + method_code}">
+
+                        <!-- ko if: ($data.method_title == "Pick Up") -->
+                        <span data-bind="html: window.freeShiping"></span>
+                            
+                        <!-- /ko -->
+                        <!-- ko if: ($data.method_title == "Local Delivery") -->
+                        <span data-bind="html: window.localDelivery"></span>
+                            
+                        <!-- /ko -->
+                        <!-- ko ifnot: ($data.method_title == "Pick Up") -->
+                            <!-- ko ifnot: ($data.method_title == "Local Delivery") -->
+                                <!-- ko text: $data.method_title --><!-- /ko -->
+                            <!-- /ko -->    
+                        <!-- /ko -->        
+                         
+                    </label>
+                    <div class="shipping-rates">
+                        <!-- ko if: ($data.method_title == "Pick Up") -->
+                            <!-- ko text: 'Free' --><!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko if: ($data.method_title == "Local Delivery") -->
+                            <!-- ko text: $parents[1].getFormattedPrice(amount) --><!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko ifnot: ($data.method_title == "Pick Up") -->
+                             <!-- ko ifnot: ($data.method_title == "Local Delivery") -->
+                                <!-- ko text: $parents[1].getFormattedPrice(amount) --><!-- /ko -->
+                            <!-- /ko -->    
+                        <!-- /ko -->
+                    </div>
+                    </div>
+                   
+                    <!-- /ko -->
+                </div>
+            </dd>
+        </dl>
+    </fieldset>
+</form>

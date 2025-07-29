@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Magento\Catalog\Block\Product\View\Options\Type\Select" type="Mangoit\MultiplyOptions\Block\Product\View\Options\Type\Select" />
+     <preference for="Magento\Catalog\Block\Product\View\Options\Type\Text" type="Mangoit\MultiplyOptions\Block\Product\View\Options\Type\Text" />
+    <preference for="Magento\Catalog\Block\Product\View\Options" type="Mangoit\MultiplyOptions\Block\Product\View\Options" />
+    <preference for="Magento\Catalog\Model\Product\Type\Price" type="Mangoit\MultiplyOptions\Model\Product\Type\Price" />
+    <preference for="Smartwave\Megamenu\Block\TopMenu" type="Mangoit\MultiplyOptions\Block\TopMenu" />
+    <!-- <preference for="\Magento\Sales\Model\Order\Email\Sender\InvoiceSender"
+                type="Mangoit\MultiplyOptions\Model\Email\Sender\InvoiceSender"/> -->
+    <!-- <preference for="\Magento\Sales\Model\Order\Email\Sender\InvoiceCommentSender"
+                type="MangoIt\EmailAttachments\Model\Email\Sender\InvoiceCommentSender"/> -->
+
+    <!-- <preference for="\Magento\Sales\Model\Order\Email\Sender\ShipmentSender"
+                type="Mangoit\MultiplyOptions\Model\Email\Sender\ShipmentSender"/> -->
+
+    <!-- <preference for="\Magento\Sales\Model\Order\Email\Sender\OrderCommentSender"
+                type="Mangoit\MultiplyOptions\Model\Email\Sender\OrderCommentSender"/> -->
+    <!-- <preference for="\Magento\Sales\Model\Order\Email\Sender\ShipmentCommentSender"
+                type="MangoIt\EmailAttachments\Model\Email\Sender\ShipmentCommentSender"/> -->
+   
+</config>

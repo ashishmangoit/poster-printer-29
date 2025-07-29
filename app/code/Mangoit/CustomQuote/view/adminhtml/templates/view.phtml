@@ -1,0 +1,62 @@
+<?php 
+
+$params = $block->getRequest()->getParams();
+$quote_id = $params['id'];
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$quote = $objectManager->get('Mangoit\CustomQuote\Model\Quote')->getCollection()->addFieldToFilter('quote_id',$quote_id);
+
+$url = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
+                    ->getStore()
+                    ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+
+$data = $quote->getData();
+
+$name  = $data[0]['name'];
+?> 
+<style type="text/css">
+	.admin__scope-old div>label {
+   min-width: 155px;
+   font-weight: bold;
+
+}
+.admin__scope-old div>span {
+   margin-left: 15px;
+}
+.admin__scope-old>a {
+   margin-bottom: 20px;
+   display: block;
+}
+.admin__scope-old div {
+   line-height: 30px;
+ 
+}
+</style>
+<a href="<?php echo $block->getUrl('quote/quote/index') ?>"><button class="btn"><?php  echo __('Go Back')?></button></a>
+
+<div><label><?php echo __('Name: ');?></label> <span><?php echo __($name); ?></span></div>
+<div><label><?php echo __('Phone: ');?></label> <span><?php echo __($data[0]['phone']); ?></span></div>
+<div><label><?php echo __('Email: ');?></label> <span><?php echo __($data[0]['email']); ?></span></div>
+<div><label><?php echo __('Project Description: ');?></label> <span><?php echo __($data[0]['project_description']); ?></span>
+<div><label><?php echo __('lamination: ');?></label> <span><?php echo __($data[0]['lamination']); ?></span></div>
+
+<div><label><?php echo __('Size: ');?></label> <span><?php echo __($data[0]['size']); ?></span></div>
+
+<div><label><?php echo __('Turnaroundtime: ');?></label> <span><?php echo __($data[0]['turn_around_time']); ?></span></div>
+<div><label><?php echo __('Quantity: ');?></label> <span><?php echo __($data[0]['quantity']); ?></span></div>
+<div><label><?php echo __('Instructions: ');?></label> <span><?php echo __($data[0]['instructions']); ?></span></div>
+<?php if($data[0]['artwork']!=null){
+	$artwork_path = $data[0]['artwork'];?>
+	<div><label><?php echo __('Artwork: ');?></label></div><div>
+		<!-- <img src = "<?php echo $url.'quote/'.$data[0]['artwork']; ?>" style  = "height: 100px;"> -->
+		<?php  $path = $block->getUrl('quote/quote/downloaduploadfile?filepath='.$artwork_path); $absolute_path = rtrim($path,'/');		
+		?>
+		<a href="<?php echo $absolute_path;?>"><button class="btn"><?php  echo __('Download your file')?></button></a>
+	</div>
+<?php }?>
+
+
+
+
+
+

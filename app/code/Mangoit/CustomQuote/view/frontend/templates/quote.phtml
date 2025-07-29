@@ -1,0 +1,111 @@
+<?php 
+//echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('quote_description')->toHtml(); 
+?>
+<div class="form_div" >
+	<form class="form"  data-mage-init='{"validation": {}}' class="form" enctype="multipart/form-data" method="post" id="custom-form"  autocomplete="off" action="<?php echo $this->getUrl('quote/index/post'); ?>">
+		<fieldset class="fieldset">
+			<fieldset class="fieldset row">
+			<div class="fields col-sm-8">
+			<h4>Contact Information</h4>
+			    <div class="field name required">
+			        <label for="name" class="label"><span><?php /* @escapeNotVerified */ echo __('Name') ?></span></label>
+			        <div class="control">
+			            <input type="text" name="name" id="name"  title="<?php /* @escapeNotVerified */ echo __('Name') ?>" data-validate="{required:true,'letters-with-basic-punc':true}">
+			            <input type="hidden" name="title" value="<?php echo $_REQUEST['title'];?>">
+			        </div>
+			    </div>
+			    <div class="field Email required">
+			        <label for="Email" class="label"><span><?php /* @escapeNotVerified */ echo __('Email') ?></span></label>
+			        <div class="control">
+			        <input type="text" name="email" id="email"  title="<?php /* @escapeNotVerified */ echo __('Email') ?>" data-validate="{required:true, 'validate-email':true}" >
+			       </div>
+				</div>
+				<div class="field phone required">
+			        <label for="phone" class="label"><span><?php /* @escapeNotVerified */ echo __('Phone Number') ?></span></label>
+			        <div class="control">
+			        <input type="text" name="phone" id="phone"  title="<?php /* @escapeNotVerified */ echo __('Phone') ?>" data-validate="{required:true,'validate-digits':true}">
+			       </div>
+			    </div>
+			    <div class="field description required">
+			        <label for="description" class="label"><span><?php /* @escapeNotVerified */ echo __('Project Description') ?></span></label>
+			        <div class="control">
+			            <input type="text" name="description" id="description"  title="<?php /* @escapeNotVerified */ echo __('Project Description') ?>" data-validate="{required:true}">
+			        </div>
+			    </div>		 
+
+			    <div class="field size required">
+			        <label for="size" class="label"><span><?php /* @escapeNotVerified */ echo __('Size') ?></span></label>			        
+			        <div class="control size ">
+			        	<div class = "width">
+			            	<input type="text" name="width" id="width"  title="<?php /* @escapeNotVerified */ echo __('width') ?>" data-validate="{required:true}" style="width:30%";>
+			            </div>	
+			           <span>X</span>
+			           <div class = "height">
+			            	<input type="text" name="height" id="height"  title="<?php /* @escapeNotVerified */ echo __('height') ?>" data-validate="{required:true}" style="width:30%";>
+			            </div>	
+			           
+			        </div>
+			    </div>
+
+			    <div class="field lamination required">
+			    	<label for="lamination" class="label"><span><?php /* @escapeNotVerified */ echo __('Lamination') ?></span></label>
+	                    <select required aria-required="true" class="lamination" name="lamination">
+	                    <option value=""><?php echo __('Please select')?></option>
+	                    <?php 
+	                    $option_data = $block->getOptions('color_front');
+
+	                    foreach($option_data as $front) {
+	                    	echo '<option value='.$front.'>'.__($front).'</option>';
+	                    }?>            
+	                    </select>
+                </div>
+			   
+			    <div class="field quty required">
+			        <label for="qty" class="label"><span><?php /* @escapeNotVerified */ echo __('Quantity') ?></span></label>
+			        <div class="control">
+			            <input type="text" name="quantity" id="quantity"  title="<?php /* @escapeNotVerified */ echo __('Quantity') ?>" data-validate="{required:true,'validate-digits':true}">
+			        </div>
+			    </div>
+
+                 <div class="field turnaroundtime required">
+			    	<label for="turnaroundtime" class="label"><span><?php /* @escapeNotVerified */ echo __('Turnaroundtime') ?></span></label>
+	                    <select required aria-required="true" class="turnaroundtime" name="turnaroundtime">
+	                    <option value=""><?php echo __('Please select')?></option>
+	                    <?php 
+	                    $option_data = $block->getOptions('turnaroundtime');
+
+	                    foreach($option_data as $data) {
+	                    	echo '<option value='.$data.'>'.__($data).'</option>';
+	                    }?>            
+	                    </select>
+                </div>            
+
+
+                <div class="field artwork">
+			    	<label for="artwork" class="label"><span><?php /* @escapeNotVerified */ echo __('Upload ArtWork') ?></span></label>
+			    	<input type="file" name="file" id="file">
+                </div>
+			    <div class="field instructions">
+			        <label for="instructions" class="label"><span><?php /* @escapeNotVerified */ echo __('Other Instructions') ?></span></label>
+			        <div class="control">
+			        <textarea name="instructions" id="instructions"  title="<?php /* @escapeNotVerified */ echo __('Comments') ?>"></textarea>
+			        </div>
+			    </div>	 
+			    <!-- <div class="g-recaptcha" data-sitekey="6LfUOjsUAAAAAPqqP5SZ57RB_U75uLt8sjh7rXoR"></div> -->
+     			 <div class="g-recaptcha" data-sitekey="6LfOLH4UAAAAADMuOtV45NAKBIakthCd-_6UpCKl"></div>
+				<div class="primary">
+				    </br><button type="submit" class="action submit primary" title="<?php /* @escapeNotVerified */ echo __('Request Pricing') ?>"><span><?php /* @escapeNotVerified */ 
+				    if($_REQUEST['title']=='quote'){
+				    	echo __('Request Pricing ');
+				    } else {
+				    	echo __('Send File ');
+				    } ?></span></button>
+				</div>
+			</div>
+			</fieldset>
+		</fieldset>
+	 </form>
+ </div>
+
+ <script src='https://www.google.com/recaptcha/api.js' async defer></script>
+

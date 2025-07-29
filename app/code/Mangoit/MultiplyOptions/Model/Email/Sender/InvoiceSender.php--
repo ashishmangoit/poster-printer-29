@@ -1,0 +1,83 @@
+<?php
+/**
+ * @author     MangoIt
+ * @package    MangoIt_EmailAttachments
+ * @copyright  Copyright (c) 2015 MangoIt Solutions (http://www.mangoitsolutions.com/)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace Mangoit\MultiplyOptions\Model\Email\Sender;
+
+class InvoiceSender extends \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
+{
+    
+    public function __construct(
+        \Magento\Sales\Model\Order\Email\Container\Template $templateContainer,
+        \Magento\Sales\Model\Order\Email\Container\InvoiceIdentity $identityContainer,
+        \Magento\Sales\Model\Order\Email\SenderBuilderFactory $senderBuilderFactory,
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Sales\Model\Order\Address\Renderer $addressRenderer,
+        \Magento\Payment\Helper\Data $paymentHelper,
+        \Magento\Sales\Model\ResourceModel\Order\Invoice $invoiceResource,
+        \Magento\Framework\App\Config\ScopeConfigInterface $globalConfig,
+        \Magento\Framework\Event\ManagerInterface $eventManager
+    ) {
+        parent::__construct(
+            $templateContainer,
+            $identityContainer,
+            $senderBuilderFactory,
+            $logger,
+            $addressRenderer,
+            $paymentHelper,
+            $invoiceResource,
+            $globalConfig,
+            $eventManager
+        );
+        
+    }
+
+
+    public function send(\Magento\Sales\Model\Order\Invoice $invoice, $forceSyncMode = false)
+    {
+        $invoice->setSendEmail(true);
+
+        if (!$this->globalConfig->getValue('sales_email/general/async_sending') || $forceSyncMode) {
+            $order = $invoice->getOrder();
+            $state = $order->getState();
+            if ($state == 'complete') {
+                $subject = "Poster Print Center - Your Order #".$order->getIncrementId() ." is completed!";
+            }else{
+                $subject = "Invoice for your ".$order->getStore()->getFrontendName()." order" ;
+            }
+            $transport = [
+                'order' => $order,
+                'invoice' => $invoice,
+                'pos_sub' => $subject,
+                'comment' => $invoice->getCustomerNoteNotify() ? $invoice->getCustomerNote() : '',
+                'billing' => $order->getBillingAddress(),
+                'payment_html' => $this->getPaymentHtml($order),
+                'store' => $order->getStore(),
+                'formattedShippingAddress' => $this->getFormattedShippingAddress($order),
+                'formattedBillingAddress' => $this->getFormattedBillingAddress($order)
+            ];
+
+            $this->eventManager->dispatch(
+                'email_invoice_set_template_vars_before',
+                ['sender' => $this, 'transport' => $transport]
+            );
+
+            $this->templateContainer->setTemplateVars($transport);
+
+            if ($this->checkAndSend($order)) {
+                $invoice->setEmailSent(true);
+                $this->invoiceResource->saveAttribute($invoice, ['send_email', 'email_sent']);
+                return true;
+            }
+        }
+
+        $this->invoiceResource->saveAttribute($invoice, 'send_email');
+
+        return false;
+    }
+}

@@ -1,0 +1,277 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+$params = $block->getRequest()->getParams();
+
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance(); 
+$storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
+ $currencyCode = $storeManager->getStore()->getCurrentCurrencyCode(); 
+ $currency = $objectManager->create('Magento\Directory\Model\CurrencyFactory')->create()->load($currencyCode); 
+ $currencySymbol = $currency->getCurrencySymbol();
+
+
+$id=0;
+if(sizeof($params))
+$id = $params['id'];
+?>
+<?php /* @var $block \Magento\Catalog\Block\Product\View\Options\Type\Select */ ?>
+<?php 
+$_option = $block->getOption();
+$class = ($_option->getIsRequire()) ? ' required' : '';
+  $customClass =''; 
+  $optionId ='';    
+  $customadhesive='';
+
+if($_option->getTitle() == 'Size' || $_option->getTitle() == 'Strip Size'){    
+    $customClass = "size";    
+}if($_option->getTitle() == 'Production Time'){   
+    $customClass = "production-time"; 
+    $customadhesive = "adhesive-vinyl";     
+    $production_time_array = $block->getProductionTimeArray();        
+}
+if($_option->getTitle() == 'Quantity'){    
+    $customClass = "quantity";    
+}
+if($_option->getTitle() == 'Custom Size'){    
+    $customClass = "custom-size-option";    
+    
+}
+if($_option->getTitle() == 'Material'){    
+    $customClass = "custom-option-material";
+    $material_array = $block->getProductionTimeArray();    
+}
+if($_option->getTitle() == 'Wall Surface'){    
+    $customClass = "custom-option-wallsurface";    
+}
+if($_option->getTitle() == 'Need Installation'){    
+    $customClass = "custom-option-need-installation";    
+}
+if($_option->getTitle() == 'Artwork'){    
+    $class = $class." radio-button";   
+    $customClass ="custom-radio";
+   $optionId = $_option->getId();   
+}
+if($_option->getTitle() == 'Proofs'){    
+    $customClass ="proofs";
+}
+if($_option->getTitle() == 'Color'){    
+    $customClass = "color";    
+}
+?>
+<div class = "custom-option <?php echo $customadhesive;?> <?php echo ($_option->getTitle() == 'Strip Size')? 'wallpaper-label' : ''?>">
+    <div class="field<?php /* @escapeNotVerified */ echo $class;?>">
+        <label class="label" for="select_<?php /* @escapeNotVerified */ echo $_option->getId() ?>">
+            <span><?php echo ($_option->getTitle() == 'Strip Size') ? $block->escapeHtml('Size') : $block->escapeHtml($_option->getTitle()) ?></span>
+        </label>
+        <div class="control" <?php echo ($_option->getTitle() == 'Strip Size') ? 'style="display:none;"' : ''?>>
+            <?php echo $block->getValuesHtml($customClass,$id); ?>
+            <?php if ($_option->getIsRequire()): ?>
+                <?php if ($_option->getType() == \Magento\Catalog\Model\Product\Option::OPTION_TYPE_RADIO || $_option->getType() == \Magento\Catalog\Model\Product\Option::OPTION_TYPE_CHECKBOX):          
+                 ?>
+                    <span id="options-<?php /* @escapeNotVerified */ echo $_option->getId() ?>-container" options_id = "<?php echo $optionId;?>" class ="optionId"></span>
+                <?php endif; ?>
+            <?php endif;?>
+        </div>
+    </div>
+</div>
+
+<?php 
+    if($_option->getTitle() == 'Size' || $_option->getTitle() == 'Strip Size'){        
+    ?><label class="custom-option-limit" style = "color:blue; text-align:center;display:none;"></label>
+    
+    <?php if($_option->getTitle() == 'Strip Size'){?>
+        <div class = "size_field wallpaper-box" style = "display:none;">
+        <div class="width-box wallpaper">
+          <label><?php echo __('Width');?> </label>
+          <div class="inner-width wallpaper">
+            <input type="number" id = "width-ft" name = "width-ft" value="0"/>
+            <span class="unit"><?php echo __('ft');?></span>           
+          </div>  
+          <div class="inner-width wallpaper">
+            <input type="number" id = "width-in" name = "width-in" value="0"/> 
+            <span class="unit"><?php echo __('in');?></span>          
+          </div> 
+        </div>
+        <div class="height-box wallpaper">  
+          <label><?php echo __('Height');?></label>
+          <div class="inner-height wallpaper">
+            <input type="number" id = "height-ft" name = "height-ft" value="0"/>
+            <span class="unit"><?php echo __('ft');?></span>                        
+          </div>  
+          <div class="inner-height wallpaper">
+            <input type="number" id = "height-in" name = "height-in" value="0"/>
+            <span class="unit"><?php echo __('in');?></span>                        
+          </div>  
+        </div>  
+    </div>
+        <div id="errmsg" class =""></div>
+    </div>
+    <?php }else{?>
+     <div class = "size_field" style = "display:none;">
+        <div class="width-box">
+          <label><?php echo __('Width');?> </label>
+          <div class="inner-width">
+            <select class ="select" id = "width" name = "width">
+            </select>           
+          </div>  
+          <span><?php echo __('inches');?></span>
+        </div>
+        <div class="height-box">  
+          <label><?php echo __('Height');?></label>
+          <div class="inner-height">
+            <select class ="select" id = "height" name = "height">
+            </select>                       
+          </div>  
+          <span><?php echo __(' inches');?></span>
+        </div>  
+    </div>
+        <div id="errmsg" class =""></div>
+    </div>
+<?php }}
+
+?>
+<?php 
+    if($_option->getTitle() == 'Proofs'){   
+    ?>
+     <div class = "proofs-info" style = "color:red;display: none; font-style: italic;">
+        <sapn><?php echo __('Turnaround time countdown starts once proof approval is received.');?></span>
+    </div>
+    
+<?php }
+if($_option->getTitle() == 'Production Time'){
+  ?>
+ <div class="price-box production-time-price-final-price" data-role="priceBox"> 
+  <span class="price-container-show price-final_price tax weee" itemprop="offers" itemscope="" itemtype="http://schema.org/Offer">   
+      <label class="final-price-label">Printing Cost </label>
+      <div class="final-price-value">
+        <span class="currency-symbol"><?php echo $currencySymbol?> </span>
+        <span class="show_price"></span>     
+      </div>  
+  </span>
+</div>
+<div id = "payment-error"  style="color:red;display: none";>
+  <p>This product has a required minimum order of $25.</p>
+</div>
+<div id = "width-error"  style="color:red;display: none";>
+  <p>Please Select Width!!</p>
+</div>
+<div id = "height-error"  style="color:red;display: none";>
+  <p>Please Select Height!!</p>
+</div>
+
+<?php }
+?>
+
+<script type="text/javascript">
+    require(['jquery','jquery/ui','uiwidget'
+        ], function ($) {       
+     $(document).ready(function(){
+        var checked = true;  
+        var file_upload = false;    
+        <?php if(!empty($production_time_array)){?>
+            window.production_time_array = '<?php echo json_encode($production_time_array)?>'; 
+        <?php }?>
+        <?php if(!empty($material_array)){?>
+            window.material_array = '<?php echo json_encode($material_array)?>';
+        <?php }?>
+        $(".allownumericwithoutdecimal").on("keypress keyup blur change",function (event) {
+           $(this).val($(this).val().replace(/[^\d].+/, ""));
+            if ((event.which < 48 || event.which > 57 || event.which==8)) {
+                event.preventDefault();
+            }
+            if($(this).val()<1){
+              $(this).val(1);
+            }
+        });
+         $('.radio-button').on("change", function() {
+          var optionid = $('.optionId').attr('options_id');          
+          $('.delete-file').trigger('click');
+          if ($('#options_'+optionid+'_3').is(":checked")){
+            checked = false;
+              $('#file-name').html('');
+              $('.file-uploaded').hide();
+              $('#image_upload_preview1').hide();
+              $('.image-uploader').hide();
+              $('#delete').hide();                 
+              $('.file-upload-error').hide();
+              $('.cropit-image-input').val('');
+              $('.upload-image').show();
+            $('.not-image').hide();
+          } else{
+              $('.file-uploaded').show();
+              checked = true;
+          }
+        });
+       $('#product_addtocart_form').on('submit',function(event){
+                      
+          file_upload =  $('#file-name').html();
+          var widthFt = parseFloat($('#width-ft').val());
+          var widthIn = parseFloat($('#width-in').val());
+          var heightFt = parseFloat($('#height-ft').val());
+          var heightIn = parseFloat($('#height-in').val());
+
+          if(widthFt == 0 && widthIn == 0)
+          {   
+              event.preventDefault();
+              $('#width-error').css("display","block");
+              $('#height-error').css("display","none");
+
+          } else if(heightFt == 0 && heightIn == 0) {
+            event.preventDefault();
+            $('#height-error').css("display","block");
+            $('#width-error').css("display","none");
+          }
+          else {
+
+            $('#width-error').css("display","none");
+            $('#height-error').css("display","none");
+          }
+          if(file_upload!=''){
+            checked=false;
+          }else if(checked == true){
+            event.preventDefault();
+              $('.file-upload-error').html('Please upload the file.');
+              $('.file-upload-error').show();
+              return false;
+          }
+          else if(checked == false && file_upload != ''){
+              
+              return true;
+          }
+         
+       });
+   
+    });
+ });
+</script>
+<style>
+   .wallpaper-box .wallpaper {
+    display: flex;
+}
+.wallpaper-box .wallpaper label {
+    width: 60px!important;
+    text-align: left;
+}
+.wallpaper-box .wallpaper 
+ span.unit {
+    padding-left: 5px;
+}
+.wallpaper-box .wallpaper {
+    margin-bottom: 10px!important;
+}
+.wallpaper-box.size_field {
+    width: 80%;
+    float: left;
+    clear: inherit;
+}
+.custom-option.wallpaper-label {
+    width: 20%;
+    float: left;
+    clear: inherit!important;
+} 
+</style>

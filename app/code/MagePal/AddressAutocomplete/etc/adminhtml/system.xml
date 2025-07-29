@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © MagePal LLC. All rights reserved.
+ * See COPYING.txt for license details.
+ * https://www.magepal.com | support@magepal.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="magepal_address_autocomplete" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="5" translate="label">
+            <label>Address Autocomplete</label>
+            <tab>magepal</tab>
+            <resource>MagePal_AddressAutocomplete::magepal_address_autocomplete</resource>
+            <group id="about_magepal" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
+                <attribute type="expanded">1</attribute>
+                <label>Address Autocomplete</label>
+                <comment>
+                    <![CDATA[
+                    <div class="magepal-info">
+                        Copyright © 2022 <a href="https://www.magepal.com/magento2/extensions.html?utm_source=address-autocomplete&utm_medium=admin" target="_blank">MagePal, LLC</a>
+                        <a href="https://www.magepal.com/help/docs/address-autocomplete-magento2/?utm_source=address-autocomplete&utm_medium=admin#documentation" target="_blank">Documentation</a>
+                        <a href="https://www.magepal.com/help/docs/address-autocomplete-magento2/?utm_source=address-autocomplete&utm_medium=admin#support">Support</a>
+                        <a href="https://www.magepal.com/help/docs/address-autocomplete-magento2?utm_source=address-autocomplete&utm_medium=admin#current_version" target="_blank">Latest Version</a>
+                        <a href="https://www.magepal.com/help/docs/address-autocomplete-magento2?utm_source=address-autocomplete&utm_medium=admin" target="_blank">Extension Detail</a>
+                        <a href="https://www.magepal.com/magento2/extensions.html?utm_source=address-autocomplete&utm_medium=admin" target="_blank">More Extensions</a>
+                    </div>
+                    Automatically convert guest checkout to customer with our
+                    <a href="https://www.magepal.com/address-autocomplete-for-magento-2.html?utm_source=address-autocomplete&utm_medium=admin">
+                    Guest to Customer</a> extension.
+                    <hr class="magepal-hr" />
+                    ]]>
+                </comment>
+                <field id="MagePal_AddressAutocomplete" translate="label" type="label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Composer Version</label>
+                    <frontend_model>MagePal\Core\Block\Adminhtml\System\Config\Composer\Version</frontend_model>
+                </field>
+            </group>
+            <group id="general" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
+                <label>Setting</label>
+                <field id="api_key" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google API Key</label>
+                </field>
+                <field id="admin_autocomplete" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Admin Order Form Autocomplete</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="frontend_autocomplete" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Customer Checkout Autocomplete</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="field_mapping" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
+                <label>Field Mapping</label>
+                <field id="subpremise" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>subpremise</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates a first-order entity below a named location, usually a singular building within a collection of buildings with a common name</comment>
+                </field>
+                <field id="street_number" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>street_number</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates street number</comment>
+                </field>
+                <field id="route" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>route</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates a named route (such as US 101)</comment>
+                </field>
+                <field id="locality" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>locality</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates an incorporated city or town political entity.</comment>
+                </field>
+                <field id="administrative_area_level_1" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>administrative_area_level_1</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates a first-order civil entity below the country level. Within the United States, these administrative levels are states. Not all nations exhibit these administrative levels.</comment>
+                </field>
+                <field id="country" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>country</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates the national political entity, and is typically the highest order type returned by the Geocoder</comment>
+                </field>
+                <field id="postal_code" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>postal_code</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates a postal code as used to address postal mail within the country</comment>
+                </field>
+                <field id="postal_code_suffix" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>postal_code_suffix</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates a postal code suffix as used to address postal mail within the country</comment>
+                </field>
+                <field id="postal_town" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>postal_town</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates a grouping of geographic areas, such as locality and sublocality, used for mailing addresses in some countries</comment>
+                </field>
+                <field id="sublocality_level_1" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>sublocality_level_1</label>
+                    <source_model>MagePal\AddressAutocomplete\Model\Config\Source\FieldMapping</source_model>
+                    <comment>Indicates a first-order entity below a named location, usually a singular building within a collection of buildings with a common name</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

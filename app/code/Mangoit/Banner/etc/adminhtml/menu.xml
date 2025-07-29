@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Mangoit_Banner::bannercore" title="Homepage Banner" module="Mangoit_Banner" sortOrder="51" resource="Mangoit_Banner::bannercore"/>
+        <add id="Mangoit_Banner::banner" title="Homepage Banner" module="Mangoit_Banner" sortOrder="10" action="banner/index/index" resource="Mangoit_Banner::banner" parent="Mangoit_Banner::bannercore"/>
+    </menu>
+</config>

@@ -1,0 +1,21 @@
+{
+  "name": "aitoc/smtp",
+  "description": "SMTP",
+  "require": {
+    "ext-dom": "*",
+    "aitoc/core": ">=1.0.17"
+  },
+  "type": "magento2-module",
+  "version": "1.0.7",
+  "license": [
+    "Commercial"
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Aitoc\\Smtp\\": ""
+    }
+  }
+}

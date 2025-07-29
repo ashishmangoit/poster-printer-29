@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Copyright © 2015 Magento. All rights reserved.
+* See COPYING.txt for license details.
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
+<system>
+
+<!-- Add new Tab -->
+<tab id="calc_value" translate="label" sortOrder="300">
+    <label>calculator Value</label>
+</tab>
+
+<section id="qty_range" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+    <label>Quantity Range</label>
+<tab>calc_value</tab>
+<!-- resource tag name which we have to defined in the acl.xml -->
+<resource>Mangoit_CustomQuote::mangoit_customquote</resource>
+<group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+    <label>Quantity Range</label>
+<field id="value" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+    <label>Quantity Range</label>
+</field>
+</group>
+</section>
+
+<section id="calc_value" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+    <label>Calculator value</label>
+<tab>calc_value</tab>
+<!-- resource tag name which we have to defined in the acl.xml -->
+<resource>Mangoit_CustomQuote::mangoit_customquote</resource>
+<group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+    <label>Calculation Value</label>
+<field id="value" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+    <label>Calculation Value</label>
+</field>
+</group>
+</section>
+
+<tab id="quote" translate="label" sortOrder="300">
+    <label>Quote</label>
+</tab>
+
+<section id="quote" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+    <label>Quote</label>
+<tab>quote</tab>
+<!-- resource tag name which we have to defined in the acl.xml -->
+<resource>Mangoit_CustomQuote::mangoit_customquote</resource>
+<group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+<label>Quote Options</label>
+
+<field id="color_front" translate="label" type="textarea" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+    <label>Laminate</label>
+</field>
+
+<field id="color_back" translate="label" type="textarea" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+    <label>Project Description</label>
+</field>
+
+
+<field id="turnaroundtime" translate="label" type="textarea" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+    <label>Turnaroundtime</label>
+</field>
+
+</group>
+</section>
+</system>
+</config>

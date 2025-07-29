@@ -1,0 +1,122 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * Template for displaying products list widget
+ *
+ */
+?>
+<?php
+   $id = $block->getProductIds();
+   $collection = $block->getProductCollection($id);
+
+ $_helper = $this->helper('Magento\Catalog\Helper\Output');
+ $_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+
+ $_category_config = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/category');
+ $_category_grid_config = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/category_grid');
+
+    $type = 'widget-product-grid';
+
+    $mode = 'grid';
+
+    $image = 'new_products_content_widget_grid';
+    $hover_image = 'category_page_grid-hover';
+    $title = $block->getTitle() ? __($block->getTitle()) : '';
+    $items = $block->getProductCollection($id)->getItems();
+
+    $showWishlist = true;
+    $showCompare = true;
+    $showCart = true;
+    $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::DEFAULT_VIEW;
+    $description = false;
+    
+    //$image_width = ($_category_config['ratio_width'])?$_category_config['ratio_width']:272;
+    //$image_height = ($_category_config['ratio_height'])?$_category_config['ratio_height']:337;
+    $image_width =200;
+    $image_height = 200;
+?>
+<div class="block widget block-products-list <?php /* @escapeNotVerified */ echo $mode; ?>">
+        <?php if ($title):?>
+        <div class="block-title">
+            <strong><?php /* @escapeNotVerified */ echo $title; ?></strong>
+        </div>
+        <?php endif ?>
+        <div class="block-content">
+            <?php /* @escapeNotVerified */ echo '<!-- ' . $image . '-->' ?>
+            <div class="products-grid products-<?php /* @escapeNotVerified */ echo $mode; ?> <?php /* @escapeNotVerified */ echo $mode; ?>">
+                <ol class="product-items <?php /* @escapeNotVerified */ echo $type; ?>">
+                    <?php $iterator = 1; ?>
+                    <?php foreach ($collection as $_item): ?>
+                        <?php /* @escapeNotVerified */ echo($iterator++ == 1) ? '<li class="product-item">' : '</li><li class="product-item">' ?>
+                        <div class="product-item-info">
+                            <a href="<?php echo $_item->getProductUrl() ?>" class="product photo product-item-photo" tabindex="-1">
+                                <?php
+                                    if($_category_config['aspect_ratio'])
+                                        $productImage = $_imagehelper->init($_item, $image)->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE)->resize($image_width);
+                                    else
+                                        $productImage = $_imagehelper->init($_item, $image)->resize($image_width, $image_height);
+                                    $productImageUrl = $productImage->getUrl();
+                                ?>
+                                    <img class="product-image-photo default_image" src="<?php echo $productImageUrl; ?>" alt="<?php echo $productImage->getLabel(); ?>"image_width="272" image_height="337"/>
+                                <?php if($_category_config['alternative_image']): ?>
+                                <?php
+                                    if($_category_config['aspect_ratio'])
+                                        $productHoverImage = $_imagehelper->init($_item, $hover_image)->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize($image_width);
+                                    else
+                                        $productHoverImage = $_imagehelper->init($_item, $hover_image)->resize($image_width, $image_height);
+                                    $productHoverImageUrl = $productHoverImage->getUrl();
+                                ?>
+                                    <?php if($productImageUrl != str_replace("/thumbnail/","/small_image/",$productHoverImageUrl)): ?>
+                                    <img class="product-image-photo hover_image" src="<?php //echo $productHoverImageUrl; ?>" alt="<?php echo $productHoverImage->getLabel(); ?>" image_width="100px" image_height="100px"/>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </a>
+                            <div class="product-item-details">
+                               
+                                 <strong class="product-item-name">
+                                    <a title="<?php echo $block->escapeHtml($_item->getName()) ?>"
+                                       href="<?php /* @escapeNotVerified */ echo $block->getProductUrl($_item) ?>"
+                                       class="product-item-link">
+                                        <?php echo $block->escapeHtml($_item->getName()) ?>
+                                    </a>
+                                </strong>
+                                <?php if($_category_config['product_price']): ?>
+                                <?php echo $block->getProductPriceHtml($_item, $type); ?>
+                                <?php endif; ?>
+                                
+                                <?php if($_category_config['actions']): ?>
+                                <?php if ($showWishlist || $showCompare || $showCart): ?>
+                                    <div class="product-item-actions">
+                                        <?php if($_category_config['addtowishlist']): ?>
+                                            <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow() && $showWishlist): ?>
+                                                <a href="#"
+                                                   data-post='<?php /* @escapeNotVerified */ echo $block->getAddToWishlistParams($_item); ?>'
+                                                   class="action towishlist actions-secondary" data-action="add-to-wishlist"
+                                                   title="<?php /* @escapeNotVerified */ echo __('Add to Wish List') ?>">
+                                                    <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
+                                                </a>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                       
+                                    </div>
+                                <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php echo($iterator == count($items)+1) ? '</li>' : '' ?>
+                    <?php endforeach ?>
+                </ol>
+            </div>
+            <?php echo $block->getPagerHtml() ?>
+        </div>
+    </div>
+
+ 

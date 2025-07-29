@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+ 
+ <event name="checkout_cart_add_product_complete">
+  <observer name="Mangoit_Add_Cart" instance="Mangoit\FileUploadOption\Observer\SetProductImg" />
+ </event>
+
+ <event name="checkout_cart_update_item_complete">
+  <observer name="Mangoit_Update_Cart" instance="Mangoit\FileUploadOption\Observer\SetProductImg" />
+ </event>
+
+ 
+</config>

@@ -1,0 +1,95 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$config_address = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('helloworld/general/address');
+ $address = explode('&', $config_address);
+// @codingStandardsIgnoreFile
+$cart = $objectManager->get('\Magento\Checkout\Model\Cart');
+$production_day=''; 
+// get cart items
+$items = $cart->getItems();
+ 
+// get custom options value of cart items
+foreach ($items as $item) {
+    $options = $item->getProduct()->getTypeInstance(true)->getOrderOptions($item->getProduct());
+    $customOptions = $options['options'];
+    if (!empty($customOptions)) {
+        foreach ($customOptions as $option) {
+            if($optionTitle = $option['label'] == 'Production Time'){
+                $optionId = $option['option_id'];
+                $production_day = $option['value'];    
+            }
+            
+        }
+    }
+}
+$day_add=0;
+if($production_day == 'Next Business Day'){
+    $day_add=1;
+}elseif($production_day == '2 Business Days'){
+    $day_add=2;
+}elseif($production_day == '3 Business Days'){
+    $day_add=3;
+}elseif($production_day == '4 Business Days'){
+    $day_add=4;
+}elseif($production_day == '5-6 Business Days'){
+    $day_add=5;
+}elseif($production_day == '6-7 Business Days'){
+    $day_add=6;
+}elseif($production_day == '8-10 Business Days'){
+    $day_add=8;
+}else{
+    $day_add =0;
+}
+
+$timeStamp = time();
+$timeData = date('d/m/y',$timeStamp); 
+$production_time = date('M d, Y', strtotime("+".$day_add ."days"));
+
+//echo $newDate = strtotime('+1 days',$timeData);
+?>
+<div id="checkout" data-bind="scope:'checkout'" class="checkout-container">
+    <div id="checkout-loader" data-role="checkout-loader" class="loading-mask" data-mage-init='{"checkoutLoader": {}}'>
+        <div class="loader">
+            <img src="<?php /* @escapeNotVerified */ echo $block->getViewFileUrl('images/loader-1.gif'); ?>"
+                 alt="<?php /* @escapeNotVerified */ echo __('Loading...'); ?>"
+                 style="position: absolute;">
+        </div>
+    </div>
+    <!-- ko template: getTemplate() --><!-- /ko -->
+    <script type="text/x-magento-init">
+        {
+            "#checkout": {
+                "Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>
+            }
+        }
+    </script>
+    <script>
+        window.checkoutConfig = <?php /* @escapeNotVerified */ echo \Zend_Json::encode($block->getCheckoutConfig()); ?>;
+
+        // Create aliases for customer.js model from customer module
+        window.isCustomerLoggedIn = window.checkoutConfig.isCustomerLoggedIn;
+        window.customerData = window.checkoutConfig.customerData;
+        window.cityName = '<?php echo trim($address[1]); ?>'; 
+        window.regionId = '<?php echo trim($address[2]); ?>';
+        window.zipCodeId = '<?php echo trim($address[3]); ?>';
+        window.streetAddress2 = '<?php echo trim($address[0]); ?>';        
+        window.countryId = '<?php echo trim($address[4]);?>';
+        window.production_time = '<?php echo $production_time;?>';
+        window.freeShipping = 'Pick up at '+window.streetAddress2+',<br>'+window.cityName+', CA '+window.zipCodeId+'<br> On '+window.production_time;
+        window.localDelivery = 'Local Delivery <br> On '+window.production_time;
+        
+    </script>
+    <script>
+        require([
+            'mage/url',
+            'Magento_Ui/js/block-loader'
+        ], function(url, blockLoader) {
+            blockLoader("<?php /* @escapeNotVerified */ echo $block->getViewFileUrl('images/loader-1.gif'); ?>");
+            return url.setBaseUrl('<?php /* @escapeNotVerified */ echo $block->getBaseUrl();?>');
+        })
+    </script>
+</div>

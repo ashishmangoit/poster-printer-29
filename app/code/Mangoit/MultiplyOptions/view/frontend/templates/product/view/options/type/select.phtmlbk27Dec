@@ -1,0 +1,139 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+
+<?php /* @var $block \Magento\Catalog\Block\Product\View\Options\Type\Select */ ?>
+<?php 
+$_option = $block->getOption();
+$class = ($_option->getIsRequire()) ? ' required' : '';
+  $customClass =''; 
+  $optionId ='';    
+
+if($_option->getTitle() == 'Size'){    
+    $customClass = "size";    
+}if($_option->getTitle() == 'Production Time'){    
+    $customClass = "production-time";    
+}
+if($_option->getTitle() == 'Quantity'){    
+    $customClass = "quantity";    
+}
+if($_option->getTitle() == 'Custom Size'){    
+    $customClass = "custom-size-option";    
+}
+
+if($_option->getTitle() == 'Artwork'){    
+    $class = $class." radio-button";   
+    $customClass ="custom-radio";
+   $optionId = $_option->getId();   
+}
+if($_option->getTitle() == 'Proofs'){    
+    $customClass ="proofs";
+}
+
+?>
+<div class = "custom-option">
+    <div class="field<?php /* @escapeNotVerified */ echo $class;?>">
+        <label class="label" for="select_<?php /* @escapeNotVerified */ echo $_option->getId() ?>">
+            <span><?php echo  $block->escapeHtml($_option->getTitle()) ?></span>
+        </label>
+        <div class="control">
+            <?php echo $block->getValuesHtml($customClass); ?>
+            <?php if ($_option->getIsRequire()): ?>
+                <?php if ($_option->getType() == \Magento\Catalog\Model\Product\Option::OPTION_TYPE_RADIO || $_option->getType() == \Magento\Catalog\Model\Product\Option::OPTION_TYPE_CHECKBOX):          
+                 ?>
+                    <span id="options-<?php /* @escapeNotVerified */ echo $_option->getId() ?>-container" options_id = "<?php echo $optionId;?>" class ="optionId"></span>
+                <?php endif; ?>
+            <?php endif;?>
+        </div>
+    </div>
+</div>
+
+<?php 
+    if($_option->getTitle() == 'Size'){        
+    ?>
+     <div class = "size_field" style = "display:none;">
+        <label><?php echo __('Custom Size');?> </label>
+        <input   id = "width" class = "width" name = "width" type="number"/>
+        <label>x</label>
+        <input   id = "height" class = "height" name = "height" type="number"/>
+    </div>
+        <div id="errmsg" class =""></div>
+    </div>
+    
+<?php }
+
+?>
+<?php 
+    if($_option->getTitle() == 'Proofs'){        
+    ?>
+     <div class = "proofs-info" style = "color:red;display: none;">
+        <p><?php echo __('Proofs will be emailed within 4 hours during regular business hours.
+Turnaround time countdown will start once proof is approved.');?></p>
+    </div>
+    
+<?php }
+
+?>
+<script>
+    require(['jquery'], function ($) {
+     $(document).ready(function(){
+
+        var checked = false;  
+        var file_upload = false;    
+        var optionid = $('.optionId').attr('options_id');
+        $('#options_'+optionid+'_2').prop('checked',true);
+        if ($('#options_'+optionid+'_2').is(":checked")){
+                $('.file-uploaded').hide();
+                
+        }
+        $('.proofs').on('change', function() {    
+           var proofSelect = $('.proofs option:selected');
+           var proofSelected = proofSelect.text();             
+           if(proofSelected == 'PDF proof'){
+            $('.proofs-info').show();
+           }else{
+            $('.proofs-info').hide();
+           }
+        });    
+        $('.radio-button').on("change", function() {
+            var optionid = $('.optionId').attr('options_id');
+            if ($('#options_'+optionid+'_2').is(":checked")){
+                $('.file-uploaded').hide();
+                
+
+            } else{
+                $('.file-uploaded').show();
+                checked = true;
+               // console,log(checked);
+            }
+            
+         });
+       
+         $('#product_addtocart_form').on('submit',function(event){
+            // event.preventDefault();
+
+            file_upload =  $('#file-name').html(); 
+
+          /*  if(checked == true ){
+                $('.file-upload-error').html('Please upload the file.');
+                $('.file-upload-error').show();
+                return false;
+            }*/
+            /*else if(checked == false && file_upload != ''){
+                 $('.not-image').hide();
+                 $('#image_upload_preview1').hide();
+                $('.upload-image').show();
+            }*/
+           /* else{
+                return true;
+            }*/
+         });
+    });
+ });
+</script>

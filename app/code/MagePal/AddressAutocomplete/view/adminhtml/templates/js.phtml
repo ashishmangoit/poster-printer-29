@@ -1,0 +1,33 @@
+<?php
+/**
+ * Copyright © MagePal LLC. All rights reserved.
+ * See COPYING.txt for license details.
+ * https://www.magepal.com | support@magepal.com
+ */
+
+/** @var $block MagePal\AddressAutocomplete\Block\Adminhtml\OrderCreate */
+?>
+<script src="//maps.googleapis.com/maps/api/js?key=<?= $block->getApiKey() ?>&callback=initAutocomplete&libraries=places&v=weekly" defer></script>
+<script>
+    require(["prototype"], function(){
+        document.observe("dom:loaded", function() {
+            initAutocomplete();
+        });
+
+        Ajax.Responders.register({
+            onComplete: function(){
+                if(Ajax.activeRequestCount <= 0){
+                    initAutocomplete();
+                }
+            }
+        });
+    });
+
+    function initAutocomplete() {
+        require(["magePalAddressAutocompleteApi"], function(autocompleteApi){
+            let autocomplete = autocompleteApi();
+            autocomplete.setComponentForm(<?= $block->getFieldMappingAsJson() ?>);
+            autocomplete.init();
+        });
+    }
+</script>

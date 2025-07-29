@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="mage/gallery/gallery.css"/>
+    </head>
+    <update handle="catalog_product_opengraph" />
+    <update handle="page_calendar"/>
+    <body>
+        
+    <move element="page.main.title" destination="product.info.container.custom"/>
+    <move element="product.info.review" destination="product.info.container.custom" after="page.main.title"/>
+    <move element="product.info.overview" destination="product.info.container.custom" after="product.info.review"/>
+    <move element="product.info.extrahint" destination="product.info.container.custom" after="product.info.overview"/>
+    <move element="product.price.final" destination="product.info.form.options"  before="product.info.addtocart" remove="true"/>
+    
+    <!-- <referenceBlock name="product.info.addtocart.additional" remove="true"/> -->    
+    <move element="product.info" destination="product.info.container.custom1" after="product.info.review"/>
+
+    <referenceContainer name="content">
+        <container name="product.info.container.custom1" htmlTag="div" htmlClass="product-info-container-custom1" after="product.info.container.custom"/>       
+        <container name="product.info.container.custom" htmlTag="div" htmlClass="product-info-container-custom" after="product.info.media"/>
+    </referenceContainer>
+
+    <referenceContainer name="content">
+         <container name="product.info.container.custommg" htmlTag="div" htmlClass="product-info-container-custommg" after="product.info.main"/>
+    </referenceContainer>
+
+    <move element="product.info.details" destination="product.info.media" after="-"/>
+    <move element="product.info.container.custom" destination="product.info.media" before="product.info.details"/>
+    
+<referenceBlock name="product_view_addthis_links" remove="true"/>
+    </body>
+</page>

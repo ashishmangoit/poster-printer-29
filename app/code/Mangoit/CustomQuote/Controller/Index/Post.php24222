@@ -1,0 +1,164 @@
+<?php
+namespace Mangoit\CustomQuote\Controller\Index;
+use \Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Framework\View\Result\PageFactory;
+class Post extends \Magento\Framework\App\Action\Action {
+
+    protected $quote;
+
+    protected $_objectManager;
+    
+    /**
+    * @param \Magento\Framework\App\Action\Context $context
+    * @param \Magento\Framework\ObjectManagerInterface $objectManager
+    */
+    protected $_transportBuilder;
+    protected $directory_list;
+    /**
+    * @var  \Magento\Framework\Mail\Template\TransportBuilder
+    */
+    protected $_storeManager;
+    protected $_scopeConfig;
+    //protected $_fileUploaderFactory;
+    protected $_mediaDirectory;
+    protected $_fileUploaderFactory;
+
+    /**
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Demo\HelloWorld\Model\Customer $customer
+     */
+    public function __construct(
+        \Mangoit\CustomQuote\Model\Quote $quote,
+        \Magento\Framework\App\Action\Context $context,
+        //\Magento\MediaStorage\Model\File\UploaderFactory $fileUploaderFactory,
+        \Magento\Framework\Filesystem $filesystem,
+        \Magento\MediaStorage\Model\File\UploaderFactory $fileUploaderFactory,
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\App\Filesystem\DirectoryList $directory_list,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder
+    ) {
+        $this->quote = $quote;
+        $this->directory_list = $directory_list;
+        $this->_mediaDirectory = $filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA);
+        $this->_fileUploaderFactory = $fileUploaderFactory;
+        // $this->_fileUploaderFactory = $fileUploaderFactory;
+        $this->_objectManager = $objectManager;
+        $this->_storeManager = $storeManager;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_transportBuilder = $transportBuilder;   
+        parent::__construct($context);
+    }
+
+    public function execute() {
+        //To save quote data
+        $quote = $this->quote;
+        $laminate =null;
+        $turnaroundtime="Same Day";
+        if(empty($_POST['g-recaptcha-response'])){
+            $this->messageManager->addError('Incorrect captcha');
+        }else{
+             $resultRedirect = $this->resultRedirectFactory->create();
+            try{
+                $target = $this->_mediaDirectory->getAbsolutePath('quote/'); 
+                /** @var $uploader \Magento\MediaStorage\Model\File\Uploader */
+                $uploader = $this->_fileUploaderFactory->create(['fileId' => 'file']);
+                /** Allowed extension types */
+                $uploader->setAllowedExtensions(['jpg', 'jpeg', 'gif', 'png', 'zip', 'doc','pdf','png','tiff','psd','ai','ppt']);
+                /** rename file name if already exists */
+                $uploader->setAllowRenameFiles(true);
+                $result = $uploader->save($target);
+            } catch (\Exception $e) {
+               // $this->messageManager->addError($e->getMessage());
+            }
+             if($_POST['lamination']!=null){
+                if($_POST['lamination']=='Satin'){
+                    $laminate = "Satin Laminate";
+                }else{
+                    $laminate = "Gloss Laminate";
+                }
+            }
+            if($_POST['turnaroundtime']=='Next Business Day'){
+                $turnaroundtime = "Next Business Day";
+            }else if($_POST['turnaroundtime']=='2 Business Days'){
+                $turnaroundtime = "2 Business Days";
+            }else if($_POST['turnaroundtime']=='3 Business Days'){
+                $turnaroundtime = "3 Business Days";
+            } 
+            $size = ''.$_POST['width'].'"'.'X'.$_POST['height'].'"';
+            $quote -> setData('name',$_POST['name']);
+            $quote -> setData('email',$_POST['email']);
+            $quote -> setData('phone',$_POST['phone']);
+            $quote -> setData('project_description',$_POST['description']);            
+            $quote -> setData('size',$size);
+            $quote -> setData('lamination',$laminate);
+            $quote -> setData('turn_around_time',$turnaroundtime);
+            $quote -> setData('quantity',$_POST['quantity']);       
+            $quote -> setData('instructions',$_POST['instructions']);
+              
+            if(isset($_FILES['file']['name'])) {
+                $quote -> setData('artwork',$_FILES['file']['name']);
+                
+            } 
+            $quote ->save();
+            $title = '';
+            if(strpos($_POST['title'], 'quote') !== false){
+                $title="Custom Quote";
+            $this->messageManager->addSuccess(__('Quote Submitted Successfully'));      
+            }else{
+                $title="File Upload";
+                $this->messageManager->addSuccess(__('File Uploaded Successfully'));  
+            }
+           
+            $store = $this->_storeManager->getStore()->getId();
+            $quoteEmail = $this->_scopeConfig->getValue('quote/general/quoteEmail');
+            $transport = $this->_transportBuilder->setTemplateIdentifier('1')
+                ->setTemplateOptions(['area' => 'frontend', 'store' => $store])
+                ->setTemplateVars(
+                    [
+                        'store' => $this->_storeManager->getStore(),
+                        'name'=>$_POST['name'],
+                        'title'=>$title,
+                        'customerEmail'=>$_POST['email'],
+                        'phoneNumber'=>$_POST['phone'],
+                        'project_description'=>$_POST['description'],
+                        'size'=>$size,
+                        'laminate'=>$laminate,
+                        'quantity'=>$_POST['quantity'],
+                        'turnarround'=>$turnaroundtime,
+                        'fileName'=>$_FILES['file']['name']!=''?$_FILES['file']['name']:'No Image Uploaded.',
+                        'instruction'=>$_POST['instructions']
+                    ]
+                )
+                ->setFrom('general')
+                // you can config general email address in Store -> Configuration -> General -> Store Email Addresses
+                ->addTo($quoteEmail, $_POST['name'])
+                ->getTransport();
+            $transport->sendMessage();
+        }
+       
+
+
+        // $store = $this->_storeManager->getStore()->getId();
+        // $transport = $this->_transportBuilder->setTemplateIdentifier(1)
+        //     ->setTemplateOptions(['area' => 'frontend', 'store' => $store])
+        //     ->setTemplateVars(
+        //         [
+        //             'store' => $this->_storeManager->getStore(),
+        //         ]
+        //     )
+        //     ->setFrom('general')
+
+        //     $sentToEmail = $this->_scopeConfig->getValue('trans_email/ident_support/email',ScopeInterface::SCOPE_STORE);
+        //     // you can config general email address in Store -> Configuration -> General -> Store Email Addresses
+        //     ->addTo($sentToEmail, 'Admin')
+        //     ->getTransport();
+        // $transport->sendMessage();  
+        
+        
+        $this->_redirect('quote?title='.$_POST['title']);
+        
+        //return $this;   
+    }
+}

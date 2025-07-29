@@ -1,0 +1,205 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+$_objectManager =  \Magento\Framework\App\ObjectManager::getInstance(); //instance of Object manager
+$checkoutSession = $_objectManager->create('Magento\Checkout\Model\Session');
+?>
+<?php $_order = $block->getOrder();?>
+<?php if ($_order):
+    $total_item = $_order->getTotalItemCount();
+$counter=0; $image_value=array();?>
+    <?php $_items = $_order->getAllItems(); 
+    ?>
+     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+        <thead style="background: #A9A9A9;color:#fff;">
+            <tr>
+                <th style="padding: 5px 10px;text-transform: uppercase;font-size: 14px;border-right: 1px solid #fff;text-align: left;">Order Summary</th>
+                <th style="padding: 5px 10px;text-transform: uppercase;font-size: 14px;border-right: 1px solid #fff;text-align: center;">QTY</th>
+                <th style="padding: 5px 10px;text-transform: uppercase;font-size: 14px;border-left: 1px solid #fff;text-align: center; width:71px;">Unit Cost</th>
+                <th style="padding: 5px 10px;text-transform: uppercase;font-size: 14px;border-left: 1px solid #fff;text-align: center;">Price</th>
+            </tr>
+        </thead>
+        <?php foreach ($_items as $_item): ?>
+            <?php
+                if ($_item->getParentItem()) {
+                    continue;
+                }
+            ?>
+            <tbody>
+                <?= $block->getItemHtml($_item) ?>
+            </tbody>
+        <?php endforeach; ?>       
+    </table>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="padding-top: 20px;">
+    <tbody>
+        <tr>
+            <td align="left" valign="middle" width="425" style="padding-right: 20px;">
+                <?php
+                $admin = $this->getAdmin();
+                $debugData = $_objectManager->create('Psr\Log\LoggerInterface');
+                $debugData->info("observer is working".$admin."");
+                $quote_item = $_objectManager->create('\Mangoit\MultiplyOptions\Helper\QuantityCalculate');
+                if(isset($admin) && $admin==1) {
+                    foreach($_items as $item) {
+                      $_options = $item->getProductOptions();
+                      $itemId = $item->getQuoteItemId();
+                      $image_show='';
+                      if (isset($_options['options']) && !empty($_options['options'])) {
+                        foreach($_options['options'] as $_option) {
+
+                            // $_formatedOptionValue = $this->getFormatedOptionValue($_option);
+
+                          if ($_option['option_type'] == 'file') {
+                                // override here as per your requirements
+                                if (isset($_option['option_value'])) {
+                                    $image_data = unserialize($_option['option_value']);
+                                    $title = explode('.', $image_data['title']);
+                                    $fileExtension = array_pop($title);
+                                    if ($fileExtension == 'doc' || $fileExtension == 'docx')
+                                    {
+                                    $quote_path = 'custom_options/doc.png';
+                                    }
+                                    else
+                                    if ($fileExtension == 'pdf')
+                                    {
+                                    $quote_path = $quote_item->getImgData($itemId);
+                                    if ($quote_path == '') $quote_path = 'custom_options/pdf.png';
+                                    }
+                                    else
+                                    if ($fileExtension == 'ppt' || $fileExtension == 'pptx')
+                                    {
+                                    $quote_path = 'custom_options/ppt.png';
+                                    }
+                                    else
+                                    if ($fileExtension == 'ai')
+                                    {
+                                    $quote_path = $quote_item->getImgData($itemId);
+                                    if ($quote_path == '') $quote_path = 'custom_options/ai.png';
+                                    }
+                                    else
+                                    if ($fileExtension == 'tiff')
+                                    {
+                                    $quote_path = $quote_item->getImgData($itemId);
+                                    if ($quote_path == '') $quote_path = 'custom_options/tiff.png';
+                                    }
+                                    else
+                                    if ($fileExtension == 'psd')
+                                    {
+                                    $quote_path = $quote_item->getImgData($itemId);
+                                    if ($quote_path == '') $quote_path = 'custom_options/psd.png';
+                                    }
+                                    else
+                                    if ($fileExtension == 'tiff')
+                                    {
+                                    $quote_path = $quote_item->getImgData($itemId);
+                                    if ($quote_path == '') $quote_path = 'custom_options/tiff.png';
+                                    }
+                                    else
+                                    if ($fileExtension == 'eps')
+                                    {
+                                    $quote_path = $quote_item->getImgData($itemId);
+                                    if ($quote_path == '') $quote_path = 'custom_options/eps.jpg';
+                                    }
+                                    else
+                                    {
+                                    $quote_path = $image_data['quote_path'];
+                                    }             
+                                } //if
+                                $storeManager = $_objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+                                $base_url = $storeManager->getStore()->getBaseUrl();
+                                $image_path = $base_url . 'pub/media/' . $quote_path;
+                                $image_show=1;
+                                // $imgpath = $objectManager->create('Mangoit\MultiplyOptions\Helper\Image')->imageResize($quote_path,'165','165');
+                                $image_value[$counter]['image'] = $image_path;
+                                $image_value[$counter]['title']=$image_data['title'];
+                                $counter++; 
+                                //echo $image_show;
+                            }//if
+                        }//foreach               
+                    }//if
+                }//foreach
+                    $debugData = $_objectManager->create('Psr\Log\LoggerInterface');        
+                    $debugData->info('counter'.$counter);
+                    $debugData->info(serialize($image_value));
+                  ?>
+                    <!--<p style="margin: 0;font-size: 16px;">Image download links.</p>
+                    <p>-->
+                        <?php /*if($counter>0 && sizeof($image_value)){
+                          for($i=0;$i<=$counter-1;$i++){
+                        ?>
+                        <a href="<?php echo $image_value[$i]['image'];?>"><?php echo $image_value[$i]['title']?></p>
+                            <?php     
+                        }
+                    }*/?><?php
+                } else { 
+                    if($_order->getStatus() == 'processing' && $_order->getInvoiceCollection()->count()==0 && $_order->getShipmentsCollection()->count()==0 ){?>
+                        <p style="margin: 0;font-size: 16px;"><strong>Thank you for your order!</strong></p>
+                        <p style="margin: 0;font-size: 14px;"><strong>We'll send you an email when your order is ready to ship.</strong></p>
+                        <p style="margin:0;display:block;padding-top: 10px;"></p>
+                        <p style="margin:0;font-size: 14px;">Local pickups available from 9am-6am.</p> 
+                    <?php }?>
+                   
+                    <p style="margin:0;display:block;padding-bottom: 10px;"></p>
+                    <p style="margin: 0;font-size: 14px;">posterprintcenter.com</p>
+                    <p style="margin: 0;font-size: 14px;">3 Dorman Avenue</p>
+                    <p style="margin: 0;font-size: 14px;">San Francisco, CA 94124</p>
+                    <p style="margin: 0;font-size: 14px;">415-853-2500</p>
+                    <p style="margin: 0;font-size: 14px;">print@posterprintcenter.com</p><?php          
+            } //else ends here?>
+            </td>
+            <td align="left" valign="top">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:5px 10px;line-height: 25px;">
+            <tbody>
+             <?php 
+                    $storeManager = $_objectManager->get('Magento\Store\Model\StoreManagerInterface');
+                     $currencyCode = $storeManager->getStore()->getCurrentCurrencyCode(); 
+                     $currency = $_objectManager->create('Magento\Directory\Model\CurrencyFactory')->create()->load($currencyCode); 
+                     $currencySymbol = $currency->getCurrencySymbol();
+                      ?>   
+                <tr>
+                    <td width="70" style="font-family: arial;">Subtotal:</td>
+                    <td style="font-family: arial;text-align: right;"><?php echo $currencySymbol.number_format((float)$_order->getSubtotal(), 2, '.', '');?></td>
+                </tr>
+                <tr>
+                    <td width="50" style="font-family: arial;">Tax:</td>
+                    <td style="font-family: arial;text-align: right;"><?php echo $currencySymbol.number_format((float)$_order->getTaxAmount(), 2, '.', '');?></td>
+                </tr>
+                <tr>
+                    <td width="60" style="font-family: arial;">Shipping:</td>
+                    <td style="font-family: arial;text-align: right;"><?php echo $currencySymbol.number_format((float)$_order->getShippingAmount(), 2, '.', '');?></td>
+                </tr>
+               <!--  <tr>
+                    <td width="50" style="height: 20px;"></td>
+                    <td style="height: 20px;text-align: right;"></td>
+                </tr> -->
+                <tr>
+                    <td width="50" style="font-family: arial;"><strong>Total:</strong></td>
+                    <td style="font-family: arial;text-align: right;"><strong><?php echo $currencySymbol.number_format((float)$_order->getGrandTotal(), 2, '.', '');?></strong></td>
+                </tr>
+            </tbody>
+        </table>
+    <?php if ($this->helper('Magento\GiftMessage\Helper\Message')->isMessagesAllowed('order', $_order, $_order->getStore()) && $_order->getGiftMessageId()): ?>
+        <?php $_giftMessage = $this->helper('Magento\GiftMessage\Helper\Message')->getGiftMessage($_order->getGiftMessageId()); ?>
+        <?php if ($_giftMessage): ?>
+            <br />
+            <table class="message-gift">
+                <tr>
+                    <td>
+                        <h3><?= /* @escapeNotVerified */  __('Gift Message for this Order') ?></h3>
+                        <strong><?= /* @escapeNotVerified */  __('From:'); ?></strong> <?= $block->escapeHtml($_giftMessage->getSender()) ?>
+                        <br /><strong><?= /* @escapeNotVerified */  __('To:'); ?></strong> <?= $block->escapeHtml($_giftMessage->getRecipient()) ?>
+                        <br /><strong><?= /* @escapeNotVerified */  __('Message:'); ?></strong>
+                        <br /><?= $block->escapeHtml($_giftMessage->getMessage()) ?>
+                    </td>
+                </tr>
+            </table>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endif; 
+   // $checkoutSession->unsAdminEmail();
+?>

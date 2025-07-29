@@ -1,0 +1,37 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php $_shipment = $block->getShipment(); 
+$_order = $block->getOrder();
+$order_id= $this->getRequest()->getParam('order_id');
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$order = $objectManager->create('Magento\Sales\Api\Data\OrderInterface')->load($order_id);
+$tracksCollection = $order->getTracksCollection();
+$count=count($tracksCollection->getItems());
+?>
+<?php if ($order && $count>0):?>
+<table class="shipment-track">
+    <thead>
+        <tr>
+            <td><strong><?= /* @escapeNotVerified */  __('Shipped By') ?></strong></td>
+            <td><strong>&nbsp;</strong></td>
+            <td><strong><?= /* @escapeNotVerified */  __('Tracking Number') ?></strong></td>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($tracksCollection->getItems() as $_item): ?>
+        <tr>
+            <td><?= $block->escapeHtml($_item->getTitle()) ?></td>
+            <td><strong>&nbsp;</strong></td>
+            <td><?= $block->escapeHtml($_item->getNumber()) ?></td>
+        </tr>
+    <?php endforeach ?>
+    </tbody>
+</table>
+<?php endif; ?>

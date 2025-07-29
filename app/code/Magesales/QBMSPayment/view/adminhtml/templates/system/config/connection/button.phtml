@@ -1,0 +1,21 @@
+<script
+        type="text/javascript"
+        src="https://appcenter.intuit.com/Content/IA/intuit.ipp.anywhere-1.3.3.js">
+</script>
+<style type="text/css">a.intuitPlatformConnectButton { display: block;}</style>
+<script>
+    var redirectUrl = "<?php echo $block->getGrantUrl();?>"
+    intuit.ipp.anywhere.setup({
+        grantUrl:  redirectUrl,
+        datasources: {
+            quickbooks : true,
+            payments : true
+        },
+        paymentOptions:{
+            intuitReferred : true
+        }
+    });
+
+</script>
+
+<br /><ipp:connectToIntuit></ipp:connectToIntuit><br />

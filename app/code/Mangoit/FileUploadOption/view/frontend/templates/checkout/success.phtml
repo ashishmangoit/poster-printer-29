@@ -1,0 +1,229 @@
+<?php /** @var $block \Vendor\Module\Block\Success */ ?>
+<style type="text/css">
+  .checkout-onepage-success .product-image-inner img {
+   height: 100% !important;
+}
+.checkout-onepage-success .product-image-inner  {
+   text-align:center;
+}
+.modal-footer {
+   display: none;
+}
+.modal-popup .modal-inner-wrap { width:55% !important}
+.preview.upload-file label{height: auto;
+background-color: #222222;
+color: #fff;
+font-size: 14px;
+text-transform: uppercase;
+display: block;
+line-height: 33px;
+font-family: "Oswald";
+text-align: center;
+font-weight: 400;
+letter-spacing: 0.5px;
+z-index: 0;
+vertical-align: top;}
+
+.preview.upload-file {
+    width: 64%;
+    display: inline-block;
+}
+
+.checkout-onepage-success  #delete {
+    display: inline-block;
+vertical-align: middle;
+}
+
+</style>
+<div id="loader-show" style="display: none;"><img src="<?php echo $block->getBaseUrl().'/pub/media/custom_options/custom-loader.gif';?>"></div>
+<div class="checkout-success">
+    <?php if ($block->getOrderId()):?>
+        <?php if ($block->getCanViewOrder()) :?>
+            <p><?php echo __('Your order number is: %1.', sprintf('<a href="%s" class="order-number"><strong>%s</strong></a>', $block->escapeHtml($block->getViewOrderUrl()), $block->escapeHtml($block->getOrderId()))) ?></p>
+        <?php else: ?>
+            <p><?php echo __('Your order # is: <span>%1</span>.', $block->escapeHtml($block->getOrderId())) ?></p>
+        <?php endif; ?>
+
+        <!-- BEGIN VENDOR_MODULE CUSTOM -->
+         <p><?php /* @escapeNotVerified */ echo __('We\'ll email you an order confirmation with details and tracking info.') ?></p>
+        <div class="orders-item">
+              <div class = "item">
+                <div class = "item-label product-image"><label>Product Image</label>
+                </div>
+                <div class = "item-label product-name"><label>Product Name</label>
+                </div>
+                <div class = "item-label Upload"><label>Upload Image</label>
+                </div>  
+              </div>
+            
+            <?php 
+            $orderItems = $block->getOrder();
+           
+            if(sizeof($orderItems)) {              
+
+             foreach ($orderItems as $key => $item) {
+               ?>
+               <div class = "item">
+                  <?php  if(isset($item['uploaded_file']) && $item['uploaded_file']!='' ){?>
+
+                   <div class = "product-image">
+                      <div class="product-image-inner"> 
+                        <img src="<?php echo $item['uploaded_file'];?>" height="100"/>
+                      </div>
+                  </div>
+                  <div  class="custom-model-popup-success <?php echo 'preview-details-'.$item['quote_item_id'];?>" style="text-align:center;display: none;">
+                      <img class="preview-image" alt=""  src="<?php echo $item['uploaded_file'];?>" />   
+                  </div>
+                    <?php } else {?>
+                    <div class ="product-image">
+                      <div class="product-image-inner">
+                        <img src="<?php echo $item['product_image'];?>" height="100"/>
+                      </div>
+                  </div>
+                    <?php }?>
+                    <div class = "product-name"><?php echo $item['name'];?></div>
+                    <div class = "Upload upload-file">
+                       <!-- The global progress bar -->
+                      
+                    <?php  if($item['uploaded_file'] == '' ) { ?>                    
+                      
+                      <form class="fileupload-form" id="form-<?php echo $item['quote_item_id'];?>" method="POST" enctype="multipart/form-data">
+                        
+                          <input type="hidden" id = "<?php echo $item['quote_item_id'];?>" name="item_id" value="<?php echo $item['quote_item_id'];?>">
+                          <input type="hidden" name="product_id" value="<?php echo $item['product_id'];?>">
+                          <label>Upload your file.</label>
+                          <input class="fileupload" type="file" name="fileupload"  multiple>
+                          <div id="<?php echo 'progress-'.$item['quote_item_id'];?>" class="progress" style="display: none;">
+                              <div class="progress-bar progress-bar-success"></div>
+                          </div>  
+                      </form>
+                    <?php }else{?><div  class="preview upload-file">
+                      <label id="<?php echo 'preview-'.$item['quote_item_id'];?>" class="preview-file" >Preview</label>
+
+                    </div>
+                     <!-- <div id="delete">
+                       <button id="image_upload_preview_delete_button_other" title="Delete" type="button"/>
+                    </div> -->
+                    <?php }?>
+                          <!-- <input class="fileupload" type="button" name="fileupload"> -->
+                    <?//}?>
+                  </div>
+
+                </div>
+                 <?php
+                 }
+                }
+                ?>           
+        </div>
+        <!-- END VENDOR_MODULE CUSTOM -->
+
+       
+    <?php endif; ?>
+
+    <?php echo $block->getAdditionalInfoHtml() ?>
+
+    <div class="actions-toolbar">
+        <div class="primary">
+            <a class="action primary continue" href="<?php /* @escapeNotVerified */ echo $block->getUrl() ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require([
+        "jquery",
+        "uiwidget",
+        "frameTransport",
+        "fileUpload"
+    ], function ($) {
+      var base_url = '<?php echo $block->getBaseUrl();?>'; 
+
+        $('.fileupload-form').fileupload({   
+          dataType: 'json',     
+          url:base_url+'fileupload/onepage/upload/',     
+          type: 'POST',
+          acceptFileTypes: /(\.|\/)(?!pdf|png|jpeg|tiff|ai|ppt|psd|eps|doc|docx)$/i, 
+            /*start:function(e,data){
+              $('#loader-show').show();
+              
+            },*/
+          fail:function(e,data){
+            alert('sdfsdfs');
+              console.log(data);
+              
+            },  
+          /* add: function (e, data) {
+                var fileType = data.files[0].name.split('.').pop(), allowdtypes = 'pdf,png,jpeg,tiff,ai,ppt,psd,eps,doc,docx';
+                if (allowdtypes.indexOf(fileType) < 0) {
+                    alert('This File Format is Not Supported.');
+                    return false;
+                }
+
+            }, */ 
+          done: function (e, data) {
+            if(data._response.result.path == 'My Error Error')
+              {
+               alert("This File Format is Not Supported."); 
+             }else{
+              //$('#loader-show').hide();  
+              window.location.reload();
+             }
+            
+            //
+          },
+          progressall: function (e, data) {
+             //var v = $('.fileupload-form').closest("input[name='item_id']").val();
+             var form = $(this).closest('form[id]').attr('id');
+             var formId = form.split('-');
+             $("#progress-"+formId[1]).show();            
+             $('#loader-show').show();
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('.progress .progress-bar').css(
+                'width',
+                progress + '%'
+            );
+
+            $("#progress-"+formId[1]).css(
+                'width',
+                progress + '%'
+            );
+            if(progress==100){
+              $('.progress').hide();
+               $("#progress-"+formId[1]).hide();
+              $('#loader-show').hide();
+             // $(".progress").hide();
+            }
+            
+          }
+      
+      });  
+    });
+</script>
+<script>
+    require([
+        "jquery",
+        "Magento_Ui/js/modal/modal"
+    ], function($, modal){
+       $('.preview-file').click(function(){
+        var preview = $(this).attr('id');
+        var previewId = preview.split('-');
+        var options = {
+            type: 'popup',
+            responsive: true,            
+            title: "File Upload Preview", //write your popup title 
+            buttons: [{
+                text: $.mage.__('Submit'),
+                class: 'button',
+                click: function () {
+                    console.log('Do something here......');
+                    // Do something here........
+                }
+            }]
+        };
+        $('.preview-details-'+previewId[1]).show();
+        //$('#custom-model-popup-success').show();
+        var popupdata = $('<div />').append($('.preview-details-'+previewId[1]));
+        modal(options, popupdata);
+        popupdata.modal('openModal');
+      });
+    });
+</script>

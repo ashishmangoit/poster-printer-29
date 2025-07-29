@@ -1,0 +1,103 @@
+<?php
+/**
+ * Copyright © 2013-2017 Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$config_address = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('helloworld/general/address');
+ $address = explode('&', $config_address);
+// @codingStandardsIgnoreFile
+$cart = $objectManager->get('\Magento\Checkout\Model\Cart');
+$production_day=''; 
+// get cart items
+$items = $cart->getItems();
+if(sizeof($items) > 0){
+    // get custom options value of cart items
+    foreach ($items as $item) {
+        $options = $item->getProduct()->getTypeInstance(true)->getOrderOptions($item->getProduct());
+        if (isset($options['options'])) {
+            $customOptions = $options['options'];
+            if (!empty($customOptions)) {
+                foreach ($customOptions as $option) {
+                    if($optionTitle = $option['label'] == 'Production Time'){
+                        $optionId = $option['option_id'];
+                        $production_day = $option['value'];    
+                    }  
+                }
+            }
+        }
+    }    
+}
+
+$day_add=0;
+if($production_day == 'Next Business Day'){
+    $day_add=1;
+}elseif($production_day == '2 Business Days'){
+    $day_add=2;
+}elseif($production_day == '3 Business Days'){
+    $day_add=3;
+}elseif($production_day == '4 Business Days'){
+    $day_add=4;
+}elseif($production_day == '5-6 Business Days'){
+    $day_add=5;
+}elseif($production_day == '6-7 Business Days'){
+    $day_add=6;
+}elseif($production_day == '8-10 Business Days'){
+    $day_add=8;
+}else{
+    $day_add =0;
+}
+
+/*$timeStamp = time();
+$timeData = date('d/m/y',$timeStamp); 
+$production_time = date('M d, Y', strtotime("+".$day_add ."days"));
+$production_time = $objectManager->create('Mangoit\MultiplyOptions\Helper\QuantityCalculate')->getDeliveryDate($production_time);*/
+$production_time = $objectManager->create('Mangoit\MultiplyOptions\Helper\ServerTime')->getDeliveryDate($day_add);
+?>
+<?php /** @var $block \Magento\Checkout\Block\Cart\Shipping */ ?>
+
+<div id="block-shipping" class="block shipping" data-mage-init='{"collapsible":{"openedState": "active", "saveState": true}}'>
+    <div class="title" data-role="title">
+        <strong id="block-shipping-heading" role="heading" aria-level="2">
+            <?php /* @escapeNotVerified */ echo $block->getQuote()->isVirtual() ? __('Estimate Tax') : __('Estimate Shipping and Tax') ?>
+        </strong>
+    </div>
+    <div id="block-summary" data-bind="scope:'block-summary'" class="content" data-role="content" aria-labelledby="block-shipping-heading">
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <script type="text/x-magento-init">
+            {
+                "#block-summary": {
+                    "Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>
+                }
+            }
+        </script>
+        <script>
+            window.checkoutConfig = <?php /* @escapeNotVerified */ echo \Zend_Json::encode($block->getCheckoutConfig()); ?>;
+            window.customerData = window.checkoutConfig.customerData;
+            window.isCustomerLoggedIn = window.checkoutConfig.isCustomerLoggedIn;
+            window.cityName = '<?php echo trim($address[1]); ?>'; 
+            window.regionId = '<?php echo trim($address[2]); ?>';
+            window.zipCodeId = '<?php echo trim($address[3]); ?>';
+            window.streetAddress2 = '<?php echo trim($address[0]); ?>';        
+            window.countryId = '<?php echo trim($address[4]);?>';
+            window.production_time = '<?php echo $production_time;?>';
+            var free1Shiping = '<?php echo $address[0]?>'+',';
+            var free2Shiping='<?php echo $address[1]?>';
+            var free3Shiping='<?php echo 'CA '.$address[3]?>';
+            var free4Shiping = '<?php echo 'On ['.$production_time.']'?>';
+            var freeShipping = free1Shiping+'\n'+free2Shiping+'\n'+free3Shiping+'\n'+free4Shiping;
+            window.freeShiping = '<?php echo 'Pick up at\r\n'.$address[0].',\r\n'.$address[1].', CA '.$address[3].'<br>On '.$production_time ?>';
+            window.localDelivery = '<?php echo 'Local Delivery <br>On '.$production_time?>';
+            
+            require([
+                'mage/url',
+                'Magento_Ui/js/block-loader'
+            ], function(url, blockLoader) {
+                blockLoader("<?php /* @escapeNotVerified */ echo $block->getViewFileUrl('images/loader-1.gif'); ?>");
+                return url.setBaseUrl('<?php /* @escapeNotVerified */ echo $block->getBaseUrl();?>');
+            })
+        </script>
+    </div>
+</div>

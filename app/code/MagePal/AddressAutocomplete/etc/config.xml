@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © MagePal LLC. All rights reserved.
+ * See COPYING.txt for license details.
+ * https://www.magepal.com | support@magepal.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <magepal_address_autocomplete>
+            <field_mapping>
+                <subpremise>short_name</subpremise>
+                <street_number>short_name</street_number>
+                <route>long_name</route>
+                <locality>long_name</locality>
+                <administrative_area_level_1>long_name</administrative_area_level_1>
+                <country>long_name</country>
+                <postal_code>short_name</postal_code>
+                <postal_code_suffix>short_name</postal_code_suffix>
+                <postal_town>short_name</postal_town>
+                <sublocality_level_1>short_name</sublocality_level_1>
+            </field_mapping>
+        </magepal_address_autocomplete>
+    </default>
+</config>
